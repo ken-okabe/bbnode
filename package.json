@@ -1,0 +1,21 @@
+{
+  "name": "bbnode",
+  "version": "0.1.0",
+  "description": "bbnode ======",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenokabe/bbnode"
+  },
+  "author": "Ken Okabe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kenokabe/bbnode/issues"
+  },
+  "homepage": "https://github.com/kenokabe/bbnode",
+ 
+  "devDependencies": {}
+}
