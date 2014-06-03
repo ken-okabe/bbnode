@@ -16,6 +16,12 @@
     "url": "https://github.com/kenokabe/bbnode/issues"
   },
   "homepage": "https://github.com/kenokabe/bbnode",
- 
-  "devDependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "WebSocketStreamPlus": "^1.0.0",
+    "rpc-streamx": "^1.1.0",
+    "socket.io": "^1.0.3",
+    "socket.io-client": "^1.0.3",
+    "ws": "^0.4.31"
+  }
 }

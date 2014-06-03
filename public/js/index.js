@@ -1,34 +1,33 @@
 'use strict';
 /*global window, require, console, __dirname, $,alert*/
 
-var dev = true;
 var log = function(msg)
 {
     console.log(msg);
 };
 log('init');
 
-$.getJSON("../config.json", function(data)
+$('document').ready(function()
 {
-    var host;
-    if (dev)
-        host = 'http://localhost';
-    else
-        host = data.url;
-    var port = data.port;
+    var io = require('socket.io-client');
 
-    $('document').ready(function()
+    var socket = io.connect(window.location.hostname,
     {
-        alert(host + ':' + port);
-
-        var io = require('socket.io-client');
-
-        var socket = io.connect(host);
-        socket.on('connect', function()
+        'reconnect': true,
+        'reconnection delay': 500,
+        'max reconnection attempts': 10
+    });
+    socket
+        .on('connect', function()
         {
             log('socket connected');
-        });
 
-    });
+
+        }).on('reconnect', function()
+        {
+            log('socket reconnected');
+
+
+        });
 
 });
