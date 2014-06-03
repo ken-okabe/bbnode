@@ -91,7 +91,7 @@ exports.connect = lookup;
 exports.Manager = require('./manager');
 exports.Socket = require('./socket');
 
-},{"./manager":3,"./socket":5,"./url":6,"debug":8,"socket.io-parser":39}],3:[function(require,module,exports){
+},{"./manager":3,"./socket":5,"./url":6,"debug":8,"socket.io-parser":38}],3:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -535,7 +535,7 @@ Manager.prototype.onreconnect = function(){
   this.emit('reconnect', attempt);
 };
 
-},{"./on":4,"./socket":5,"./url":6,"bind":7,"debug":8,"emitter":9,"engine.io-client":10,"object-component":36,"socket.io-parser":39}],4:[function(require,module,exports){
+},{"./on":4,"./socket":5,"./url":6,"bind":7,"debug":8,"emitter":9,"engine.io-client":10,"object-component":35,"socket.io-parser":38}],4:[function(require,module,exports){
 
 /**
  * Module exports.
@@ -924,7 +924,7 @@ Socket.prototype.disconnect = function(){
   return this;
 };
 
-},{"./on":4,"bind":7,"debug":8,"emitter":9,"has-binary-data":33,"indexof":35,"socket.io-parser":39,"to-array":42}],6:[function(require,module,exports){
+},{"./on":4,"bind":7,"debug":8,"emitter":9,"has-binary-data":32,"indexof":34,"socket.io-parser":38,"to-array":41}],6:[function(require,module,exports){
 (function (global){
 
 /**
@@ -996,7 +996,7 @@ function url(uri, loc){
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"debug":8,"parseuri":37}],7:[function(require,module,exports){
+},{"debug":8,"parseuri":36}],7:[function(require,module,exports){
 
 /**
  * Slice reference.
@@ -1325,7 +1325,7 @@ Emitter.prototype.hasListeners = function(event){
   return !! this.listeners(event).length;
 };
 
-},{"indexof":35}],10:[function(require,module,exports){
+},{"indexof":34}],10:[function(require,module,exports){
 
 module.exports =  require('./lib/');
 
@@ -1972,7 +1972,7 @@ Socket.prototype.filterUpgrades = function (upgrades) {
 };
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./transport":13,"./transports":14,"debug":8,"emitter":9,"engine.io-parser":20,"indexof":35,"parsejson":30,"parseqs":31,"parseuri":37}],13:[function(require,module,exports){
+},{"./transport":13,"./transports":14,"debug":8,"emitter":9,"engine.io-parser":20,"indexof":34,"parsejson":30,"parseqs":31,"parseuri":36}],13:[function(require,module,exports){
 /**
  * Module dependencies.
  */
@@ -3202,7 +3202,7 @@ WS.prototype.check = function(){
   return !!WebSocket && !('__initialize' in WebSocket && this.name === WS.prototype.name);
 };
 
-},{"../transport":13,"debug":8,"engine.io-parser":20,"inherits":29,"parseqs":31,"ws":32}],19:[function(require,module,exports){
+},{"../transport":13,"debug":8,"engine.io-parser":20,"inherits":29,"parseqs":31,"ws":42}],19:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 var hasCORS = require('has-cors');
 
@@ -4344,51 +4344,6 @@ exports.decode = function(qs){
 };
 
 },{}],32:[function(require,module,exports){
-
-/**
- * Module dependencies.
- */
-
-var global = (function() { return this; })();
-
-/**
- * WebSocket constructor.
- */
-
-var WebSocket = global.WebSocket || global.MozWebSocket;
-
-/**
- * Module exports.
- */
-
-module.exports = WebSocket ? ws : null;
-
-/**
- * WebSocket constructor.
- *
- * The third `opts` options object gets ignored in web browsers, since it's
- * non-standard, and throws a TypeError if passed to the constructor.
- * See: https://github.com/einaros/ws/issues/227
- *
- * @param {String} uri
- * @param {Array} protocols (optional)
- * @param {Object) opts (optional)
- * @api public
- */
-
-function ws(uri, protocols, opts) {
-  var instance;
-  if (protocols) {
-    instance = new WebSocket(uri, protocols);
-  } else {
-    instance = new WebSocket(uri);
-  }
-  return instance;
-}
-
-if (WebSocket) ws.prototype = WebSocket.prototype;
-
-},{}],33:[function(require,module,exports){
 (function (global,Buffer){
 /*
  * Module requirements.
@@ -4449,12 +4404,12 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":44,"isarray":34}],34:[function(require,module,exports){
+},{"buffer":44,"isarray":33}],33:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 
 var indexOf = [].indexOf;
 
@@ -4465,7 +4420,7 @@ module.exports = function(arr, obj){
   }
   return -1;
 };
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 
 /**
  * HOP ref.
@@ -4550,7 +4505,7 @@ exports.length = function(obj){
 exports.isEmpty = function(obj){
   return 0 == exports.length(obj);
 };
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 /**
  * Parses an URI
  *
@@ -4577,7 +4532,7 @@ module.exports = function parseuri(str) {
   return uri;
 };
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 (function (global,Buffer){
 /**
  * Modle requirements
@@ -4733,7 +4688,7 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":44,"isarray":40}],39:[function(require,module,exports){
+},{"buffer":44,"isarray":39}],38:[function(require,module,exports){
 (function (global,Buffer){
 
 /**
@@ -5121,9 +5076,9 @@ function error(data){
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./binary":38,"buffer":44,"debug":8,"emitter":9,"isarray":40,"json3":41}],40:[function(require,module,exports){
-module.exports=require(34)
-},{}],41:[function(require,module,exports){
+},{"./binary":37,"buffer":44,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
+module.exports=require(33)
+},{}],40:[function(require,module,exports){
 /*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
 ;(function (window) {
   // Convenience aliases.
@@ -5986,7 +5941,7 @@ module.exports=require(34)
   }
 }(this));
 
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 module.exports = toArray
 
 function toArray(list, index) {
@@ -6001,38 +5956,124 @@ function toArray(list, index) {
     return array
 }
 
+},{}],42:[function(require,module,exports){
+
+/**
+ * Module dependencies.
+ */
+
+var global = (function() { return this; })();
+
+/**
+ * WebSocket constructor.
+ */
+
+var WebSocket = global.WebSocket || global.MozWebSocket;
+
+/**
+ * Module exports.
+ */
+
+module.exports = WebSocket ? ws : null;
+
+/**
+ * WebSocket constructor.
+ *
+ * The third `opts` options object gets ignored in web browsers, since it's
+ * non-standard, and throws a TypeError if passed to the constructor.
+ * See: https://github.com/einaros/ws/issues/227
+ *
+ * @param {String} uri
+ * @param {Array} protocols (optional)
+ * @param {Object) opts (optional)
+ * @api public
+ */
+
+function ws(uri, protocols, opts) {
+  var instance;
+  if (protocols) {
+    instance = new WebSocket(uri, protocols);
+  } else {
+    instance = new WebSocket(uri);
+  }
+  return instance;
+}
+
+if (WebSocket) ws.prototype = WebSocket.prototype;
+
 },{}],43:[function(require,module,exports){
+/* jshint node: true */
+/* jshint sub: true */
+
 'use strict';
-/*global window, require, console, __dirname, $,alert*/
+/*global window, $,alert*/
 
 var log = function(msg)
 {
-    console.log(msg);
+  console.log(msg);
 };
-log('init');
+log('init5');
 
 $('document').ready(function()
 {
-    var io = require('socket.io-client');
+  var io = require('socket.io-client');
 
-    var socket = io.connect(window.location.hostname,
+  var socket = io.connect(window.location.hostname,
+  {
+    'reconnect': true,
+    'reconnection delay': 500,
+    'max reconnection attempts': 10
+  });
+
+  socket
+    .on('connect', function()
     {
-        'reconnect': true,
-        'reconnection delay': 500,
-        'max reconnection attempts': 10
+      log('socket connected');
+
+      /*
+      socket.emit('msg', 'data',
+        function(data)
+        {
+          log(data);
+        }
+       );*/
+
+    })
+    .on('reconnect', function()
+    {
+      log('socket reconnected');
+
+    })
+    .on('msg', function(msg, f)
+    {
+      log(msg);
+      if (msg.cmd === 'ready')
+      {
+        log('server module for this socket ready');
+        //==================================
+        socket.emit('msg',
+          {
+            cmd: 'socketid',
+            sub: null,
+            data: null
+          },
+          function() {}
+        );
+
+        socket.emit('msg',
+          {
+            cmd: '@test',
+            sub: 'hi',
+            data: 'heloooooooo'
+          },
+          function(data)
+          {
+            log(data);
+          });
+        //======================================
+      }
+
     });
-    socket
-        .on('connect', function()
-        {
-            log('socket connected');
-
-
-        }).on('reconnect', function()
-        {
-            log('socket reconnected');
-
-
-        });
 
 });
 

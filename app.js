@@ -5,12 +5,15 @@
 var log = function(msg)
 {
   var util = require('util');
-  console.log(util.inspect(msg,
+  process.stdout.write('CORE: ');
+  process.stdout.write(util.inspect(msg,
   {
     depth: 99,
     colors: true
   }));
+  process.stdout.write('\n');
 };
+
 
 //initial one-time log on the app launch
 var os = require('os');
@@ -21,6 +24,7 @@ log(['OS Platform:', os.platform()].join(' '));
 log(['OS Architecture:', os.arch()].join(' '));
 log(['OS Total memory:', os.totalmem() / 1000 / 1000].join(' '));
 log(['OS Free  memory:', os.freemem() / 1000 / 1000].join(' '));
+
 
 var fs = require('fs');
 log('==== load www Files on memory====');
@@ -58,9 +62,19 @@ seekDir(wwwDir);
 
 log('---load modules---');
 var modules;
-fs.readdir('./www/modules', function(err, modules)
+fs.readdir('./www/modules', function(err, modulesDir)
 {
-  log(modules);
+  log(modulesDir);
+  //modules
+  log('--modules init');
+
+  var modules = [];
+  modulesDir.map(function(modulename)
+  {
+    log(modulename + ' is loading');
+    modules[modulename] = require('./www/modules/' + modulename + '/module');
+  });
+
   //=======================
   log('===read ./config/server.json');
   fs
@@ -188,9 +202,26 @@ fs.readdir('./www/modules', function(err, modules)
                   function(socket)
                   {
                     log('socket connected: ' + socket.id);
+
+
+                    //---------
                     socket
-                      .on('event',
-                        function(data) {})
+                      .on('msg',
+                        function(msg, f)
+                        {
+                          log(socket.id);
+                          log(msg);
+
+                          /* if (msg.cmd === '@test')
+                          {
+                            log(msg);
+                            if (msg.sub === 'hi')
+                            {
+                              f(msg.data);
+                            }
+                          }*/
+
+                        })
                       .on('disconnect',
                         function()
                         {
@@ -201,16 +232,22 @@ fs.readdir('./www/modules', function(err, modules)
                         {
                           log('reconnected: ' + socket.id);
                         });
+
+                    modulesDir
+                      .map(function(modulename)
+                      {
+                        modules[modulename].socket(socket);
+                      });
+
+                    socket.emit('msg',
+                    {
+                      cmd: 'ready'
+                    });
+                    log('emit modules ready for this socket');
+
                   });
 
-              //==================
-              //modules
-              log('--modules init');
-              modules.map(function(module)
-              {
-                log(module + ' is loading');
-                require('./www/modules/' + module + '/module');
-              });
+              //===========
 
 
 
@@ -273,5 +310,4 @@ fs.readdir('./www/modules', function(err, modules)
               //=======================
             });
       });
-
 });
