@@ -1,7 +1,7 @@
-/* jslint node: true */
-/* global describe, it, before, beforeEach, after, afterEach */
-'use strict';
+/* jshint node: true */
+/* jshint sub: true */
 
+'use strict';
 // this server(app1) is on the same machine of app3(3000)
 
 var port = 11111; //IDkey checker
@@ -11,12 +11,12 @@ var dbServerURL = 'http://localhost:11110';
 
 var log = function(msg)
 {
-    var util = require('util');
-    console.log(util.inspect(msg,
-    {
-        depth: 99,
-        colors: true
-    }));
+  var util = require('util');
+  console.log(util.inspect(msg,
+  {
+    depth: 99,
+    colors: true
+  }));
 };
 
 log('peerDBHolderServer Started ' + port);
@@ -48,153 +48,153 @@ var dDB;
 
 var connectDBbase = function()
 {
-    var reConnect = function()
+  var reConnect = function()
+  {
+    log('reconnecting to baseDB after 1000ms');
+    setTimeout(connectDBbase, 1000);
+  };
+
+  ws = new WebSocket(dbServerURL);
+  c = new WebSocketStream(ws);
+
+  dDB = rpc();
+  c
+    .pipe(dDB)
+    .pipe(c)
+    .on('close', function()
     {
-        log('reconnecting to baseDB after 1000ms');
-        setTimeout(connectDBbase, 1000);
-    };
+      ws.close();
+      console.log('peer dbHolder Server c close');
+      reConnect();
+    })
+    .on('error', function()
+    {
+      ws.close();
+      console.log('peer dbHolder Server c error');
+      reConnect();
+    })
+    .on('finish', function()
+    {
+      ws.close();
+      console.log('peer dbHolder Server c finish');
+      reConnect();
+    });
 
-    ws = new WebSocket(dbServerURL);
-    c = new WebSocketStream(ws);
-
-    dDB = rpc();
-    c
-        .pipe(dDB)
-        .pipe(c)
-        .on('close', function()
-        {
-            ws.close();
-            console.log('peer dbHolder Server c close');
-            reConnect();
-        })
-        .on('error', function()
-        {
-            ws.close();
-            console.log('peer dbHolder Server c error');
-            reConnect();
-        })
-        .on('finish', function()
-        {
-            ws.close();
-            console.log('peer dbHolder Server c finish');
-            reConnect();
-        });
-
-    return true;
+  return true;
 
 };
 
 
 if (connectDBbase())
 {
-    dDB.rpc('getDB',
-        true,
-        function(db)
-        {
-            log(db);
-            DB1 = db;
+  dDB.rpc('getDB',
+    true,
+    function(db)
+    {
+      log(db);
+      DB1 = db;
 
-            log('Started with the base DB');
+      log('Started with the base DB');
 
-            var main = function()
+      var main = function()
+      {
+        log(Object
+          .keys(DB1.user)
+          .length);
+
+        var dbHolder =
+          new WebSocket.Server(
+          {
+            port: port
+          })
+          .on('connection',
+            function(ws)
             {
-                log(Object
-                    .keys(DB1.user)
-                    .length);
+              console.log('====dbHolder====');
+              var c = new WebSocketStream(ws);
+              var rpc = require('rpc-stream');
 
-                var dbHolder =
-                    new WebSocket.Server(
+              c
+                .pipe(
+                  rpc(
+                  {
+                    getDB: function(val, f)
                     {
-                        port: port
-                    })
-                    .on('connection',
-                        function(ws)
-                        {
-                            console.log('====dbHolder====');
-                            var c = new WebSocketStream(ws);
-                            var rpc = require('rpc-stream');
+                      f(DB1);
+                    },
+                    dbUser: function(id, f)
+                    {
+                      f(DB1.user[id]);
+                    },
+                    dbIndexEmail: function(email, f)
+                    {
+                      f(DB1.indexEmail[email]);
+                    },
+                    setDbUser: function(obj, f)
+                    {
+                      DB1.user[obj.id] = obj.user;
 
-                            c
-                                .pipe(
-                                    rpc(
-                                    {
-                                        getDB: function(val, f)
-                                        {
-                                            f(DB1);
-                                        },
-                                        dbUser: function(id, f)
-                                        {
-                                            f(DB1.user[id]);
-                                        },
-                                        dbIndexEmail: function(email, f)
-                                        {
-                                            f(DB1.indexEmail[email]);
-                                        },
-                                        setDbUser: function(obj, f)
-                                        {
-                                            DB1.user[obj.id] = obj.user;
+                      dDB.rpc('setDbUser',
+                        obj,
+                        function() {
 
-                                            dDB.rpc('setDbUser',
-                                                obj,
-                                                function() {
-
-                                                });
-                                        },
-                                        setDbIndexEmail: function(obj, f)
-                                        {
-                                            DB1.indexEmail[obj.email] = obj.id;
-
-                                            dDB.rpc('setDbIndexEmail',
-                                                obj,
-                                                function() {
-
-                                                });
-
-                                        },
-                                        check: function(val, f)
-                                        {
-                                            if (!DB1.user[val.id])
-                                            {
-                                                f(false);
-                                            }
-                                            else if (DB1.user[val.id].key === val.key)
-                                            {
-                                                f(true);
-                                            }
-                                            else
-                                            {
-                                                f(false);
-                                            }
-                                        }
-                                    }))
-                                .pipe(c)
-                                .on('close', function()
-                                {
-                                    ws.close();
-                                    console.log('c close');
-
-                                })
-                                .on('error', function()
-                                {
-                                    ws.close();
-                                    console.log('c error');
-
-
-                                })
-                                .on('finish', function()
-                                {
-                                    ws.close();
-                                    console.log('DBHolder  stream finished');
-
-                                });
                         });
-            };
+                    },
+                    setDbIndexEmail: function(obj, f)
+                    {
+                      DB1.indexEmail[obj.email] = obj.id;
 
-            main();
-        });
+                      dDB.rpc('setDbIndexEmail',
+                        obj,
+                        function() {
+
+                        });
+
+                    },
+                    check: function(val, f)
+                    {
+                      if (!DB1.user[val.id])
+                      {
+                        f(false);
+                      }
+                      else if (DB1.user[val.id].key === val.key)
+                      {
+                        f(true);
+                      }
+                      else
+                      {
+                        f(false);
+                      }
+                    }
+                  }))
+                .pipe(c)
+                .on('close', function()
+                {
+                  ws.close();
+                  console.log('c close');
+
+                })
+                .on('error', function()
+                {
+                  ws.close();
+                  console.log('c error');
+
+
+                })
+                .on('finish', function()
+                {
+                  ws.close();
+                  console.log('DBHolder  stream finished');
+
+                });
+            });
+      };
+
+      main();
+    });
 }
 else
 {
-    log('something wrong');
-    process.exit(1);
+  log('something wrong');
+  process.exit(1);
 }
