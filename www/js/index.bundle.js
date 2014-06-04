@@ -4404,7 +4404,7 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":44,"isarray":33}],33:[function(require,module,exports){
+},{"buffer":45,"isarray":33}],33:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -4688,7 +4688,7 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":44,"isarray":39}],38:[function(require,module,exports){
+},{"buffer":45,"isarray":39}],38:[function(require,module,exports){
 (function (global,Buffer){
 
 /**
@@ -5076,7 +5076,7 @@ function error(data){
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./binary":37,"buffer":44,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
+},{"./binary":37,"buffer":45,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
 module.exports=require(33)
 },{}],40:[function(require,module,exports){
 /*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
@@ -6010,14 +6010,18 @@ if (WebSocket) ws.prototype = WebSocket.prototype;
 
 var log = function(msg)
 {
-  console.log(msg);
+  console.log('CORE:', msg);
 };
 log('init5');
 
 $('document').ready(function()
 {
-  var io = require('socket.io-client');
+  var modules = [];
+  modules['test'] = require('../modules/test/www/client_module.js');
 
+
+
+  var io = require('socket.io-client');
   var socket = io.connect(window.location.hostname,
   {
     'reconnect': true,
@@ -6046,10 +6050,18 @@ $('document').ready(function()
     })
     .on('msg', function(msg, f)
     {
+
       log(msg);
+      if (msg.cmd === 'module')
+      {
+        log('loading module @' + msg.data);
+        modules[msg.data].socket(socket);
+      }
+
+
       if (msg.cmd === 'ready')
       {
-        log('server module for this socket ready');
+        log('server modules for this socket ready');
         //==================================
         socket.emit('msg',
           {
@@ -6057,19 +6069,13 @@ $('document').ready(function()
             sub: null,
             data: null
           },
-          function() {}
+          function(socketid)
+          {
+            log(socketid);
+          }
         );
 
-        socket.emit('msg',
-          {
-            cmd: '@test',
-            sub: 'hi',
-            data: 'heloooooooo'
-          },
-          function(data)
-          {
-            log(data);
-          });
+
         //======================================
       }
 
@@ -6077,7 +6083,47 @@ $('document').ready(function()
 
 });
 
-},{"socket.io-client":1}],44:[function(require,module,exports){
+},{"../modules/test/www/client_module.js":44,"socket.io-client":1}],44:[function(require,module,exports){
+/* jshint node: true */
+/* jshint sub: true */
+'use strict';
+
+var moduleID = '@test';
+
+var log = function(msg)
+{
+  console.log(moduleID + ':', msg);
+};
+
+var init = function()
+{
+  log('init');
+
+};
+
+init();
+
+
+module.exports = {
+  socket: function(socket)
+  {
+    log('socket pass');
+
+    socket.emit('msg',
+      {
+        cmd: moduleID,
+        sub: 'hi',
+        data: 'heloooooooo'
+      },
+      function(data)
+      {
+        log(data);
+      });
+  }
+
+};
+
+},{}],45:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -7228,7 +7274,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":45,"ieee754":46}],45:[function(require,module,exports){
+},{"base64-js":46,"ieee754":47}],46:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -7351,7 +7397,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	module.exports.fromByteArray = uint8ToBase64
 }())
 
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,

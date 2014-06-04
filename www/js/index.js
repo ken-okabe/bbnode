@@ -6,14 +6,18 @@
 
 var log = function(msg)
 {
-  console.log(msg);
+  console.log('CORE:', msg);
 };
 log('init5');
 
 $('document').ready(function()
 {
-  var io = require('socket.io-client');
+  var modules = [];
+  modules['test'] = require('../modules/test/www/client_module.js');
 
+
+
+  var io = require('socket.io-client');
   var socket = io.connect(window.location.hostname,
   {
     'reconnect': true,
@@ -42,10 +46,18 @@ $('document').ready(function()
     })
     .on('msg', function(msg, f)
     {
+
       log(msg);
+      if (msg.cmd === 'module')
+      {
+        log('loading module @' + msg.data);
+        modules[msg.data].socket(socket);
+      }
+
+
       if (msg.cmd === 'ready')
       {
-        log('server module for this socket ready');
+        log('server modules for this socket ready');
         //==================================
         socket.emit('msg',
           {
@@ -53,19 +65,13 @@ $('document').ready(function()
             sub: null,
             data: null
           },
-          function() {}
+          function(socketid)
+          {
+            log(socketid);
+          }
         );
 
-        socket.emit('msg',
-          {
-            cmd: '@test',
-            sub: 'hi',
-            data: 'heloooooooo'
-          },
-          function(data)
-          {
-            log(data);
-          });
+
         //======================================
       }
 

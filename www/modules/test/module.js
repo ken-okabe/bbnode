@@ -2,10 +2,12 @@
 /* jshint sub: true */
 'use strict';
 
+var moduleID = '@test';
+
 var log = function(msg)
 {
   var util = require('util');
-  process.stdout.write('@test: ');
+  process.stdout.write(moduleID + ': ');
   process.stdout.write(util.inspect(msg,
   {
     depth: 99,
@@ -32,7 +34,7 @@ module.exports = {
       .on('msg',
         function(msg, f)
         {
-          if (msg.cmd === '@test')
+          if (msg.cmd === moduleID)
           {
             log(msg);
             if (msg.sub === 'hi')

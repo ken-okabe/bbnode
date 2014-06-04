@@ -61,7 +61,7 @@ var seekDir = function(dir)
 seekDir(wwwDir);
 
 log('---load modules---');
-var modules;
+
 fs.readdir('./www/modules', function(err, modulesDir)
 {
   log(modulesDir);
@@ -209,17 +209,12 @@ fs.readdir('./www/modules', function(err, modulesDir)
                       .on('msg',
                         function(msg, f)
                         {
-                          log(socket.id);
                           log(msg);
 
-                          /* if (msg.cmd === '@test')
+                          if (msg.cmd === 'socketid')
                           {
-                            log(msg);
-                            if (msg.sub === 'hi')
-                            {
-                              f(msg.data);
-                            }
-                          }*/
+                            f(socket.id);
+                          }
 
                         })
                       .on('disconnect',
@@ -233,10 +228,21 @@ fs.readdir('./www/modules', function(err, modulesDir)
                           log('reconnected: ' + socket.id);
                         });
 
+
+                    log('loading modules=======');
                     modulesDir
                       .map(function(modulename)
                       {
+                        log('loading module @' + modulename);
                         modules[modulename].socket(socket);
+
+                        //client_module
+                        socket.emit('msg',
+                        {
+                          cmd: 'module',
+                          sub: null,
+                          data: modulename
+                        });
                       });
 
                     socket.emit('msg',
