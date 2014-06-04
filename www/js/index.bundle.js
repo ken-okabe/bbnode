@@ -6017,10 +6017,12 @@ log('init5');
 $('document').ready(function()
 {
   var modules = [];
+
+  // add modules here manually ================
   modules['test'] = require('../modules/test/www/client_module.js');
 
 
-
+  //=======================================
   var io = require('socket.io-client');
   var socket = io.connect(window.location.hostname,
   {
@@ -6034,13 +6036,17 @@ $('document').ready(function()
     {
       log('socket connected');
 
-      /*
-      socket.emit('msg', 'data',
-        function(data)
+      socket.emit('msg',
         {
-          log(data);
+          cmd: 'socketid',
+          sub: null,
+          data: null
+        },
+        function(socketid)
+        {
+          log(socketid);
         }
-       );*/
+      );
 
     })
     .on('reconnect', function()
@@ -6050,35 +6056,12 @@ $('document').ready(function()
     })
     .on('msg', function(msg, f)
     {
-
       log(msg);
       if (msg.cmd === 'module')
       {
         log('loading module @' + msg.data);
         modules[msg.data].socket(socket);
       }
-
-
-      if (msg.cmd === 'ready')
-      {
-        log('server modules for this socket ready');
-        //==================================
-        socket.emit('msg',
-          {
-            cmd: 'socketid',
-            sub: null,
-            data: null
-          },
-          function(socketid)
-          {
-            log(socketid);
-          }
-        );
-
-
-        //======================================
-      }
-
     });
 
 });

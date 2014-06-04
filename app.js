@@ -66,7 +66,7 @@ fs.readdir('./www/modules', function(err, modulesDir)
 {
   log(modulesDir);
   //modules
-  log('--modules init');
+  log('--modules init(require)');
 
   var modules = [];
   modulesDir.map(function(modulename)
@@ -233,23 +233,22 @@ fs.readdir('./www/modules', function(err, modulesDir)
                     modulesDir
                       .map(function(modulename)
                       {
+                        // module socket @server
                         log('loading module @' + modulename);
                         modules[modulename].socket(socket);
 
-                        //client_module
+                        // invoke module socket @client (emit via socket.io, so time-gap)
                         socket.emit('msg',
                         {
                           cmd: 'module',
                           sub: null,
                           data: modulename
                         });
+
+                        //====These sockets corresponds in each side modules
                       });
 
-                    socket.emit('msg',
-                    {
-                      cmd: 'ready'
-                    });
-                    log('emit modules ready for this socket');
+
 
                   });
 
