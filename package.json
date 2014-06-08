@@ -1,8 +1,18 @@
 {
   "name": "bbnode",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "bbnode ======",
   "main": "app.js",
+  "dependencies": {
+    "WebSocketStreamPlus": "^1.0.0",
+    "lazy.js": "^0.3.2",
+    "rpc-streamx": "^1.1.0",
+    "socket.io": "^1.0.4",
+    "socket.io-client": "^1.0.4",
+    "watchjs": "^0.0.0",
+    "ws": "^0.4.31"
+  },
+  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -15,13 +25,5 @@
   "bugs": {
     "url": "https://github.com/kenokabe/bbnode/issues"
   },
-  "homepage": "https://github.com/kenokabe/bbnode",
-  "devDependencies": {},
-  "dependencies": {
-    "WebSocketStreamPlus": "^1.0.0",
-    "rpc-streamx": "^1.1.0",
-    "socket.io": "^1.0.3",
-    "socket.io-client": "^1.0.3",
-    "ws": "^0.4.31"
-  }
+  "homepage": "https://github.com/kenokabe/bbnode"
 }

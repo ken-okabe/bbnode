@@ -3202,7 +3202,7 @@ WS.prototype.check = function(){
   return !!WebSocket && !('__initialize' in WebSocket && this.name === WS.prototype.name);
 };
 
-},{"../transport":13,"debug":8,"engine.io-parser":20,"inherits":29,"parseqs":31,"ws":42}],19:[function(require,module,exports){
+},{"../transport":13,"debug":8,"engine.io-parser":20,"inherits":29,"parseqs":31,"ws":43}],19:[function(require,module,exports){
 // browser shim for xmlhttprequest module
 var hasCORS = require('has-cors');
 
@@ -4404,7 +4404,7 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":45,"isarray":33}],33:[function(require,module,exports){
+},{"buffer":47,"isarray":33}],33:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -4688,7 +4688,7 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":45,"isarray":39}],38:[function(require,module,exports){
+},{"buffer":47,"isarray":39}],38:[function(require,module,exports){
 (function (global,Buffer){
 
 /**
@@ -5076,7 +5076,7 @@ function error(data){
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./binary":37,"buffer":45,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
+},{"./binary":37,"buffer":47,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
 module.exports=require(33)
 },{}],40:[function(require,module,exports){
 /*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
@@ -5957,6 +5957,359 @@ function toArray(list, index) {
 }
 
 },{}],42:[function(require,module,exports){
+/**
+ * DEVELOPED BY
+ * GIL LOPES BUENO
+ * gilbueno.mail@gmail.com
+ *
+ * WORKS WITH:
+ * IE 9+, FF 4+, SF 5+, WebKit, CH 7+, OP 12+, BESEN, Rhino 1.7+
+ *
+ * FORK:
+ * https://github.com/melanke/Watch.JS
+ */
+
+"use strict";
+(function (factory) {
+    if (typeof exports === 'object') {
+        // Node. Does not work with strict CommonJS, but
+        // only CommonJS-like enviroments that support module.exports,
+        // like Node.
+        module.exports = factory();
+    } else if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define(factory);
+    } else {
+        // Browser globals
+        window.WatchJS = factory();
+        window.watch = window.WatchJS.watch;
+        window.unwatch = window.WatchJS.unwatch;
+        window.callWatchers = window.WatchJS.callWatchers;
+    }
+}(function () {
+
+    var WatchJS = {
+        noMore: false
+    },
+    defineWatcher,
+    unwatchOne,
+    callWatchers;
+
+    var isFunction = function (functionToCheck) {
+            var getType = {};
+            return functionToCheck && getType.toString.call(functionToCheck) == '[object Function]';
+    };
+
+    var isInt = function (x) {
+        return x % 1 === 0;
+    };
+
+    var isArray = function(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    };
+
+    var isModernBrowser = function () {
+        return Object.defineProperty || Object.prototype.__defineGetter__;
+    };
+
+    var defineGetAndSet = function (obj, propName, getter, setter) {
+        try {
+                Object.defineProperty(obj, propName, {
+                        get: getter,
+                        set: setter,
+                        enumerable: true,
+                        configurable: true
+                });
+        } catch(error) {
+            try{
+                Object.prototype.__defineGetter__.call(obj, propName, getter);
+                Object.prototype.__defineSetter__.call(obj, propName, setter);
+            }catch(error2){
+                throw "watchJS error: browser not supported :/"
+            }
+        }
+    };
+
+    var defineProp = function (obj, propName, value) {
+        try {
+            Object.defineProperty(obj, propName, {
+                enumerable: false,
+                configurable: true,
+                writable: false,
+                value: value
+            });
+        } catch(error) {
+            obj[propName] = value;
+        }
+    };
+
+    var watch = function () {
+
+        if (isFunction(arguments[1])) {
+            watchAll.apply(this, arguments);
+        } else if (isArray(arguments[1])) {
+            watchMany.apply(this, arguments);
+        } else {
+            watchOne.apply(this, arguments);
+        }
+
+    };
+
+
+    var watchAll = function (obj, watcher, level) {
+
+        if (obj instanceof String || (!(obj instanceof Object) && !isArray(obj))) { //accepts only objects and array (not string)
+            return;
+        }
+
+        var props = [];
+
+
+        if(isArray(obj)) {
+            for (var prop = 0; prop < obj.length; prop++) { //for each item if obj is an array
+                props.push(prop); //put in the props
+            }
+        } else {
+            for (var prop2 in obj) { //for each attribute if obj is an object
+                props.push(prop2); //put in the props
+            }
+        }
+
+        watchMany(obj, props, watcher, level); //watch all itens of the props
+    };
+
+
+    var watchMany = function (obj, props, watcher, level) {
+
+        for (var prop in props) { //watch each attribute of "props" if is an object
+            watchOne(obj, props[prop], watcher, level);
+        }
+
+    };
+
+    var watchOne = function (obj, prop, watcher, level) {
+
+        if(isFunction(obj[prop])) { //dont watch if it is a function
+            return;
+        }
+
+        if(obj[prop] != null && (level === undefined || level > 0)){
+            if(level !== undefined){
+                level--;
+            }
+            watchAll(obj[prop], watcher, level); //recursively watch all attributes of this
+        }
+
+        defineWatcher(obj, prop, watcher);
+
+    };
+
+    var unwatch = function () {
+
+        if (isFunction(arguments[1])) {
+            unwatchAll.apply(this, arguments);
+        } else if (isArray(arguments[1])) {
+            unwatchMany.apply(this, arguments);
+        } else {
+            unwatchOne.apply(this, arguments);
+        }
+
+    };
+
+    var unwatchAll = function (obj, watcher) {
+
+        if (obj instanceof String || (!(obj instanceof Object) && !isArray(obj))) { //accepts only objects and array (not string)
+            return;
+        }
+
+        var props = [];
+
+
+        if (isArray(obj)) {
+            for (var prop = 0; prop < obj.length; prop++) { //for each item if obj is an array
+                props.push(prop); //put in the props
+            }
+        } else {
+            for (var prop2 in obj) { //for each attribute if obj is an object
+                props.push(prop2); //put in the props
+            }
+        }
+
+        unwatchMany(obj, props, watcher); //watch all itens of the props
+    };
+
+
+    var unwatchMany = function (obj, props, watcher) {
+
+        for (var prop2 in props) { //watch each attribute of "props" if is an object
+            unwatchOne(obj, props[prop2], watcher);
+        }
+    };
+
+    if(isModernBrowser()){
+
+        defineWatcher = function (obj, prop, watcher) {
+
+            var val = obj[prop];
+
+            watchFunctions(obj, prop);
+
+            if (!obj.watchers) {
+                defineProp(obj, "watchers", {});
+            }
+
+            if (!obj.watchers[prop]) {
+                obj.watchers[prop] = [];
+            }
+
+
+            obj.watchers[prop].push(watcher); //add the new watcher in the watchers array
+
+
+            var getter = function () {
+                return val;
+            };
+
+
+            var setter = function (newval) {
+                var oldval = val;
+                val = newval;
+
+                if (obj[prop]){
+                    watchAll(obj[prop], watcher);
+                }
+
+                watchFunctions(obj, prop);
+
+                if (!WatchJS.noMore){
+                    if (JSON.stringify(oldval) !== JSON.stringify(newval)) {
+                        callWatchers(obj, prop, "set", newval, oldval);
+                        WatchJS.noMore = false;
+                    }
+                }
+            };
+
+            defineGetAndSet(obj, prop, getter, setter);
+
+        };
+
+        callWatchers = function (obj, prop, action, newval, oldval) {
+
+            for (var wr in obj.watchers[prop]) {
+                if (isInt(wr)){
+                    obj.watchers[prop][wr].call(obj, prop, action, newval, oldval);
+                }
+            }
+        };
+
+        // @todo code related to "watchFunctions" is certainly buggy
+        var methodNames = ['pop', 'push', 'reverse', 'shift', 'sort', 'slice', 'unshift'];
+        var defineArrayMethodWatcher = function (obj, prop, original, methodName) {
+            defineProp(obj[prop], methodName, function () {
+                var response = original.apply(obj[prop], arguments);
+                watchOne(obj, obj[prop]);
+                if (methodName !== 'slice') {
+                    callWatchers(obj, prop, methodName,arguments);
+                }
+                return response;
+            });
+        };
+
+        var watchFunctions = function(obj, prop) {
+
+            if ((!obj[prop]) || (obj[prop] instanceof String) || (!isArray(obj[prop]))) {
+                return;
+            }
+
+            for (var i = methodNames.length, methodName; i--;) {
+                methodName = methodNames[i];
+                defineArrayMethodWatcher(obj, prop, obj[prop][methodName], methodName);
+            }
+
+        };
+
+        unwatchOne = function (obj, prop, watcher) {
+            for(var i in obj.watchers[prop]){
+                var w = obj.watchers[prop][i];
+
+                if(w == watcher) {
+                    obj.watchers[prop].splice(i, 1);
+                }
+            }
+        };
+
+    } else {
+        //this implementation dont work because it cant handle the gap between "settings".
+        //I mean, if you use a setter for an attribute after another setter of the same attribute it will only fire the second
+        //but I think we could think something to fix it
+
+        var subjects = [];
+
+        defineWatcher = function(obj, prop, watcher){
+
+            subjects.push({
+                obj: obj,
+                prop: prop,
+                serialized: JSON.stringify(obj[prop]),
+                watcher: watcher
+            });
+
+        };
+
+        unwatchOne = function (obj, prop, watcher) {
+
+            for (var i in subjects) {
+                var subj = subjects[i];
+
+                if (subj.obj == obj && subj.prop == prop && subj.watcher == watcher) {
+                    subjects.splice(i, 1);
+                }
+
+            }
+
+        };
+
+        callWatchers = function (obj, prop, action, value) {
+
+            for (var i in subjects) {
+                var subj = subjects[i];
+
+                if (subj.obj == obj && subj.prop == prop) {
+                    subj.watcher.call(obj, prop, action, value);
+                }
+
+            }
+
+        };
+
+        var loop = function(){
+
+            for(var i in subjects){
+
+                var subj = subjects[i];
+                var newSer = JSON.stringify(subj.obj[subj.prop]);
+                if(newSer != subj.serialized){
+                    subj.watcher.call(subj.obj, subj.prop, subj.obj[subj.prop], JSON.parse(subj.serialized));
+                    subj.serialized = newSer;
+                }
+
+            }
+
+        };
+
+        setInterval(loop, 50);
+
+    }
+
+    WatchJS.watch = watch;
+    WatchJS.unwatch = unwatch;
+    WatchJS.callWatchers = callWatchers;
+
+    return WatchJS;
+
+}));
+
+},{}],43:[function(require,module,exports){
 
 /**
  * Module dependencies.
@@ -6001,12 +6354,11 @@ function ws(uri, protocols, opts) {
 
 if (WebSocket) ws.prototype = WebSocket.prototype;
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 /* jshint node: true */
 /* jshint sub: true */
-
+/* global window, $,alert,history */
 'use strict';
-/*global window, $,alert*/
 
 var log = function(msg)
 {
@@ -6014,38 +6366,109 @@ var log = function(msg)
 };
 log('init5');
 
+var g = window;
+
+g.io = {};
+
+require('watchjs');
+
 $('document').ready(function()
 {
+  //===Key Handler==========================
+  g.io.path = decodeURIComponent(window.location.pathname);;
+
+  $(window).on('popstate', function(_event)
+  {
+    alert('popstate');
+
+    g.io.path = decodeURIComponent(window.location.pathname);
+  });
+
+  g.io.pathpush = function(path)
+  {
+    history.pushState(null, null, path);
+    g.io.path = decodeURIComponent(window.location.pathname);
+  };
+
+  //===Modules==========================
   var modules = [];
 
   // add modules here manually ================
-  modules['test'] = require('../modules/test/www/client_module.js');
-
-
-  //=======================================
-  var io = require('socket.io-client');
-  var socket = io.connect(window.location.hostname,
+  modules['areacontrol'] = require('../modules/areacontrol/www/client_module.js');
+  modules['categorycontrol'] = require('../modules/categorycontrol/www/client_module.js');
+  //===Socket==========================
+  var socketio = require('socket.io-client');
+  g.io.socket = socketio.connect(window.location.hostname,
   {
     'reconnect': true,
     'reconnection delay': 500,
     'max reconnection attempts': 10
   });
 
-  socket
+  g.io.socket
     .on('connect', function()
     {
       log('socket connected');
 
-      socket.emit('msg',
-        {
-          cmd: 'socketid',
-          sub: null,
-          data: null
-        },
-        function(socketid)
-        {
-          log(socketid);
-        }
+      g.io.socket
+        .emit('msg',
+          {
+            cmd: 'socketid',
+            sub: null,
+            data: null
+          },
+          function(socketid)
+          {
+            log(socketid);
+          }
+      )
+        .emit('msg',
+          {
+            cmd: 'modulecount',
+            sub: null,
+            data: null
+          },
+          function(n)
+          {
+            log(n);
+            if (Object.keys(modules).length !== n)
+            {
+              alert('module load mismatch!!');
+            }
+          }
+      )
+        .emit('msg',
+          {
+            cmd: 'bbnamecategory',
+            sub: null,
+            data: null
+          },
+          function(data)
+          {
+            log('@@@@@@@@@@@@@@');
+            log(data.bbname);
+            log(data.categories);
+            g.io.bbname = data.bbname;
+            g.io.categories = data.categories;
+
+            //======emit ready  <1>  and <2> to initiate module load on server
+            g.io.socket
+              .emit('msg',
+                {
+                  cmd: 'readyformodules',
+                  sub: null,
+                  data: null
+                },
+                function()
+                {
+                  log();
+                }
+            );
+
+
+            //=============
+
+          }
       );
 
     })
@@ -6057,56 +6480,197 @@ $('document').ready(function()
     .on('msg', function(msg, f)
     {
       log(msg);
-      if (msg.cmd === 'module')
+
+      if (msg.cmd === 'module') //    <3>
       {
-        log('loading module @' + msg.data);
-        modules[msg.data].socket(socket);
+        log('loading module @' + msg.data); //modeleready onserver
+        modules[msg.data].start();
       }
+
     });
+
+
+
+
 
 });
 
-},{"../modules/test/www/client_module.js":44,"socket.io-client":1}],44:[function(require,module,exports){
+},{"../modules/areacontrol/www/client_module.js":45,"../modules/categorycontrol/www/client_module.js":46,"socket.io-client":1,"watchjs":42}],45:[function(require,module,exports){
 /* jshint node: true */
 /* jshint sub: true */
+/* global window, $,alert */
 'use strict';
 
-var moduleID = '@test';
+var moduleID = '@areacontrol';
+
+var g = window;
 
 var log = function(msg)
 {
   console.log(moduleID + ':', msg);
 };
 
+var task = function()
+{
+  //=====================================
+  var keys = g.io.path.split('/');
+  var key = keys[1];
+  if (key === 'area')
+  {
+    var area = keys[2];
+    log('----------');
+    log(g.io.bbname);
+
+    $('#bbname').html(area + ' ' + g.io.bbname);
+    $('#bbtitle').html(area);
+    $('#bbdescription').html('adfasdfasfsadfasdfasd');
+
+    // if area face page drow categories
+    if (!keys[3])
+    {
+      var $main = $('#main');
+      $main.html('');
+
+      var $jb = $('<div class="jumbotron"/>').appendTo($main);
+      $('<h1/>').html(area).appendTo($jb);
+      $('<p/>').html('brabarabara').appendTo($jb);
+
+      var $row = $main.append('<div class="row"/>');　
+
+      log('categories');
+      log(g.io.categories);
+      var $categoryDIV = [];
+
+      g.io.categories
+        .map(function(category)
+        {
+          log(category.title);
+          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>');
+
+          $categoryDIV[category.title]
+            .append('<h1>' + category.title + '</hi>')
+            .append('<p>' + category.sub + '</p>')
+            .on('click', function()
+            {
+              g.io.pathpush('/area/' + area + '/category/' + category.title);
+
+            });
+
+          $row
+            .append($categoryDIV[category.title]);
+
+        });
+
+    }
+  }
+};
+
+var watch = require("watchjs").watch;
+watch(g.io, 'path', function()
+{
+  log('!!!!!!!!!!!!!!!!');
+  //=====================================
+  alert('area-obseve');
+  //=====================================
+
+  task();
+
+  //==========================================
+
+});
+
 var init = function()
 {
   log('init');
-
 };
 
 init();
 
-
 module.exports = {
-  socket: function(socket)
+  start: function()
   {
-    log('socket pass');
-
-    socket.emit('msg',
-      {
-        cmd: moduleID,
-        sub: 'hi',
-        data: 'heloooooooo'
-      },
-      function(data)
-      {
-        log(data);
-      });
+    log('start');
+    task();
   }
 
 };
 
-},{}],45:[function(require,module,exports){
+},{"watchjs":42}],46:[function(require,module,exports){
+/* jshint node: true */
+/* jshint sub: true */
+/* global window, $,alert */
+'use strict';
+
+var moduleID = '@categorycontrol';
+
+var g = window;
+
+var log = function(msg)
+{
+  console.log(moduleID + ':', msg);
+};
+
+var task = function()
+{
+  var keys = g.io.path.split('/');
+  var key = keys[3];
+  if (key === 'category')
+  {
+    var category = keys[4];　
+    log(category);
+    var $main = $('#main');
+    $main.html('category');
+
+    var area = keys[2];
+    g.io.socket
+      .emit('msg',
+        {
+          cmd: moduleID,
+          sub: 'query',
+          data: [area, category]
+        },
+        function(result)
+        {
+          log(result);
+        }
+    );
+
+    //    var $row = $main.append('<div class="row"/>');　
+
+  }
+};
+
+var watch = require("watchjs").watch;
+watch(g.io, 'path', function()
+{
+  log('!!!!!!!!!!!!!!!!');
+  //=====================================
+  alert('category-obseve');
+  //=====================================
+
+  task();
+
+  //==========================================
+
+});
+
+var init = function()
+{
+  log('init');
+};
+
+init();
+
+module.exports = {
+  start: function()
+  {
+    log('start');
+    task();
+  }
+
+};
+
+},{"watchjs":42}],47:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -7257,7 +7821,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":46,"ieee754":47}],46:[function(require,module,exports){
+},{"base64-js":48,"ieee754":49}],48:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -7380,7 +7944,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	module.exports.fromByteArray = uint8ToBase64
 }())
 
-},{}],47:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,
@@ -7466,4 +8030,4 @@ exports.write = function(buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128;
 };
 
-},{}]},{},[43])
+},{}]},{},[44])

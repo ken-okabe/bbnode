@@ -3,9 +3,9 @@
 
 'use strict';
 
-// this server is on the same machine of app3(3000)
+// this server can be remote from db1-app (3001,5000)
 
-var port = 11110; //IDkey checker
+var port = 3000; //IDkey checker
 
 var log = function(msg)
 {
@@ -18,42 +18,17 @@ var log = function(msg)
 };
 
 
-log('peer dbHolderBase Server Started ' + port);
+log('dbHolderBase Server Started ' + port);
 
 var WebSocket = require('ws');
 var WebSocketStream = require('WebSocketStreamPlus');
 
-//id : 123412341234    <-    1234-1234-1234
-/*
-  DB1.user[id] = {
-                    key: dsfgdsgdsfg453h4h4sdfgsdf,
-                    email: name@email.com,
-                    region: 'japan',
-                    nickname: 'ken'
-                 };
-  DB1.indexEmail[email] = id;
-*/
-var log = function(msg)
-{
-  var util = require('util');
-  log(util.inspect(msg,
-  {
-    depth: 99,
-    colors: true
-  }));
-};
-
-var DB1 = {
-  user:
-  {},
-  indexEmail:
-  {}
-};
+var db = {};
 
 var readline = require('readline');
 var rl = readline.createInterface(process.stdin, process.stdout);
 
-rl.setPrompt('DB clone http://URL:port? ');
+rl.setPrompt('db clone http://URL:port? ');
 rl.prompt();
 
 rl.on('line', function(line)
@@ -70,7 +45,7 @@ rl.on('line', function(line)
       var ws = new WebSocket(dbServerURL);
       var c = new WebSocketStream(ws);
 
-      var rpc = require('rpc - streamx');
+      var rpc = require('rpc-streamx');
       var dDB = rpc();
 
       c
@@ -79,28 +54,28 @@ rl.on('line', function(line)
         .on('close', function()
         {
           ws.close();
-          log('peer dbHolderBase Server c close');
+          log('dbHolderBase Server c close');
 
         })
         .on('error', function()
         {
           ws.close();
-          log('peer dbHolderBase Server c error');
+          log('dbHolderBase Server c error');
           process.exit(1);
         })
         .on('finish', function()
         {
           ws.close();
-          log('peer dbHolderBase Server c finish');
+          log('dbHolderBase Server c finish');
 
         });
 
-      dDB.rpc('getDB',
+      dDB.rpc('cloneDB',
         true,
-        function(db)
+        function(db0)
         {
-          log(db);
-          DB1 = db;
+          log(db0);
+          db = db0;
 
           log('Started with cloned DB');
           main();
@@ -123,9 +98,7 @@ rl.on('line', function(line)
 var main = function()
 {
 
-  log(Object
-    .keys(DB1.user)
-    .length);
+
   //=================================
   var dbHolderBase =
     new WebSocket
@@ -144,17 +117,17 @@ var main = function()
           .pipe(
             rpc(
             {
-              setDbUser: function(obj, f)
+              /*   setDbUser: function(obj, f)
               {
                 DB1.user[obj.id] = obj.user;
               },
               setDbIndexEmail: function(obj, f)
               {
                 DB1.indexEmail[obj.email] = obj.id;
-              },
-              getDB: function(val, f)
+              }, */
+              cloneDB: function(val, f)
               {
-                f(DB1);
+                f(db);
               }
             }))
           .pipe(c)

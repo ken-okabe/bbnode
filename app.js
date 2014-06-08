@@ -14,7 +14,6 @@ var log = function(msg)
   process.stdout.write('\n');
 };
 
-
 //initial one-time log on the app launch
 var os = require('os');
 log('!!!!!! App = Node>app.js Launced !!!!!!!!!');
@@ -24,7 +23,6 @@ log(['OS Platform:', os.platform()].join(' '));
 log(['OS Architecture:', os.arch()].join(' '));
 log(['OS Total memory:', os.totalmem() / 1000 / 1000].join(' '));
 log(['OS Free  memory:', os.freemem() / 1000 / 1000].join(' '));
-
 
 var fs = require('fs');
 log('==== load www Files on memory====');
@@ -60,131 +58,151 @@ var seekDir = function(dir)
 };
 seekDir(wwwDir);
 
-log('---load modules---');
+log('g.d');
+var _ = require('lazy.js');
 
-fs.readdir('./www/modules', function(err, modulesDir)
+var g = global;
+
+try
 {
-  log(modulesDir);
-  //modules
-  log('--modules init(require)');
+  //============================================================================
+  //clone g.d--------
 
-  var modules = [];
-  modulesDir.map(function(modulename)
+  g.d = [];
+
+  //-----------
+
+  log('---load modules---');
+
+  fs.readdir('./www/modules', function(err, modulesDir)
   {
-    log(modulename + ' is loading');
-    modules[modulename] = require('./www/modules/' + modulename + '/module');
-  });
+    log(modulesDir);
+    //modules
+    log('--modules init(require)');
 
-  //=======================
-  log('===read ./config/server.json');
-  fs
-    .readFile('./config/server.json',
-      'utf8',
-      function(err, data)
-      {
-        if (err)
+    var modules = [];
+    modulesDir.map(function(modulename)
+    {
+      log(modulename + ' is loading');
+      modules[modulename] = require('./www/modules/' + modulename + '/module');
+    });
+    log(modules);
+    //=======================
+    log('===read ./config/server.json');
+    fs
+      .readFile('./config/server.json',
+        'utf8',
+        function(err, data)
         {
-          log('Error: ' + err);
-          return;
-        }
-        var obj1 = JSON.parse(data);
-        log(obj1);
-        log('===read ./config/forum.json');
-        fs
-          .readFile('./config/forum.json',
-            'utf8',
-            function(err, data)
-            {
-              if (err)
+          if (err)
+          {
+            log('Error: ' + err);
+            return;
+          }
+          var obj1 = JSON.parse(data);
+          log(obj1);
+          log('===read ./config/forum.json');
+          fs
+            .readFile('./config/forum.json',
+              'utf8',
+              function(err, data)
               {
-                log('Error: ' + err);
-                return;
-              }
-              var obj2 = JSON.parse(data);
-              log(obj2);
-
-
-
-              var port = obj1.port;
-              log('port: ' + port);
-
-              log('===run server==========');
-              //
-              var http = require('http');
-              var path = require('path');
-              var url = require('url');
-
-              var mimeTypes = {
-                'html': 'text/html',
-                'jpeg': 'image/jpeg',
-                'jpg': 'image/jpeg',
-                'png': 'image/png',
-                'js': 'text/javascript',
-                'css': 'text/css'
-              };
-
-              var server = http
-                .createServer(function(req, res)
+                if (err)
                 {
-                  log('->http requestet---');
-                  var uri = url.parse(req.url)
-                    .pathname;
-                  log(uri);
-                  try
-                  {
-                    if (uri === '/')
-                    {
-                      uri = '/index.html';
-                      log('/ -> /index.html');
-                    }
+                  log('Error: ' + err);
+                  return;
+                }
+                var obj2 = JSON.parse(data);
+                log(obj2);
 
-                    var mimeType = mimeTypes[path.extname(uri).split('.')[1]];
-                    log(mimeType);
-                    res.writeHead(200,
+                g.d['forumconfig'] = obj2;
+
+                var port = obj1.port;
+                log('port: ' + port);
+
+                log('===run server==========');
+                //
+                var http = require('http');
+                var path = require('path');
+                var url = require('url');
+
+                var mimeTypes = {
+                  'html': 'text/html',
+                  'jpeg': 'image/jpeg',
+                  'jpg': 'image/jpeg',
+                  'png': 'image/png',
+                  'js': 'text/javascript',
+                  'css': 'text/css'
+                };
+
+                var server = http
+                  .createServer(function(req, res)
+                  {
+                    log('->http requestet---');
+                    var requestedURL = url.parse(req.url)
+                      .pathname;
+                    log(requestedURL);
+
+
+                    try
                     {
-                      'Content-Type': mimeType
-                    });
-                    if (!wwwObj[uri])
-                    {
-                      log('no file');
-                      /*
-                              res.writeHead(200,
-                              {
-                                  'Content-Type': 'text/html'
-                              });
-                              uri = '/index.html';
-                              res.end(wwwObj[uri]);
-                              */
-                      res.writeHead(404,
+                      var uri;
+                      var urlA = requestedURL.split('/');
+                      if (requestedURL === '/')
                       {
-                        'Content-Type': 'text/plain'
+                        uri = '/index.html';
+                        log('/ -> /index.html');
+                      }
+                      else
+                      {
+                        var key = urlA[1];
+                        log('key: ' + key);
+
+                        if (key === 'www')
+                          uri = requestedURL.split('/www')[1];
+                        else
+                          uri = '/index.html';
+                      }
+
+                      var mimeType = mimeTypes[path.extname(uri).split('.')[1]];
+                      log(mimeType);
+                      res.writeHead(200,
+                      {
+                        'Content-Type': mimeType
                       });
-                      res.write('404 Not Found\n');
-                      res.end();
+                      if (!wwwObj[uri])
+                      {
+                        log('no file');
+                        res.writeHead(404,
+                        {
+                          'Content-Type': 'text/plain'
+                        });
+                        res.write('404 Not Found\n');
+                        res.end();
+                        return;
+                      }
+                      else
+                      {
+                        res.end(wwwObj[uri]);
+                      }
+                    }
+                    catch (e)
+                    {
                       return;
                     }
-                    else
-                    {
-                      res.end(wwwObj[uri]);
-                    }
-                  }
-                  catch (e)
+
+                  })
+                  .listen(port, function()
                   {
-                    return;
-                  }
+                    log('HTTP listening ' + port);
 
-                })
-                .listen(port, function()
-                {
-                  log('HTTP listening ' + port);
+                    //--------------------
 
-                  //--------------------
+                    //-------------------
+                  });
 
-                  //-------------------
-                });
-
-              var socketio = require('socket.io')(server);
-              /*
+                var socketio = require('socket.io')(server);
+                /*
               socketio.configure('production', function()
               {
                   log(" set config for production");
@@ -197,122 +215,176 @@ fs.readdir('./www/modules', function(err, modulesDir)
                   ]);
               });
               */
-              socketio
-                .on('connection',
-                  function(socket)
-                  {
-                    log('socket connected: ' + socket.id);
+                socketio
+                  .on('connection',
+                    function(socket)
+                    {
+                      log('socket connected: ' + socket.id);
 
 
-                    //---------
-                    socket
-                      .on('msg',
-                        function(msg, f)
-                        {
-                          log(msg);
-
-                          if (msg.cmd === 'socketid')
+                      //---------
+                      socket
+                        .on('msg',
+                          function(msg, f)
                           {
-                            f(socket.id);
-                          }
+                            log(msg);
 
-                        })
-                      .on('disconnect',
-                        function()
-                        {
-                          log('disconnected: ' + socket.id);
-                        })
-                      .on('reconnect',
-                        function()
-                        {
-                          log('reconnected: ' + socket.id);
-                        });
+                            if (msg.cmd === 'socketid')
+                            {
+                              f(socket.id);
+                            }
+                            if (msg.cmd === 'modulecount')
+                            {
+                              log('moduleslength');
+                              log(Object.keys(modules).length);
+                              f(Object.keys(modules).length);
+                            }
+                            if (msg.cmd === 'bbnamecategory')
+                            {
+                              f(
+                              {
+                                bbname: g.d['forumconfig'].bbname,
+                                categories: g.d['forumconfig'].category
+                              });
 
+                            }
 
-                    log('loading modules=======');
-                    modulesDir
-                      .map(function(modulename)
-                      {
-                        // module socket @server
-                        log('loading module @' + modulename);
-                        modules[modulename].socket(socket);
+                            // 'readyformodules'
+                            if (msg.cmd === 'readyformodules') //<2> see index.js
+                            {
+                              //--- after bbnode info is passed , load whole module and socket connect
+                              log('loading modules=======');
+                              modulesDir
+                                .map(function(modulename)
+                                {
+                                  // module socket @server
+                                  log('loading module @' + modulename);
+                                  modules[modulename].socket(socket);
 
-                        // invoke module socket @client (emit via socket.io, so time-gap)
-                        socket.emit('msg',
-                        {
-                          cmd: 'module',
-                          sub: null,
-                          data: modulename
-                        });
+                                  // invoke module socket @client (emit via socket.io, so time-gap)
+                                  socket.emit('msg',
+                                  {
+                                    cmd: 'module',
+                                    sub: null,
+                                    data: modulename
+                                  });
 
-                        //====These sockets corresponds in each side modules
-                      });
+                                  //====These sockets corresponds in each side modules
+                                });
+                              //----------------------------------
 
-
-
-                  });
-
-              //===========
-
-
-
-
-
-
-              //===================
-              var _ = require('lazy.js');
-
-              var db = [];
-              db['x'] = []; //index for db
-              db['s'] = []; //list for db
-
-              db['id'] = []; // user id
-
-              db['id'][0] = [];
-              db['id'][0]['email'] = 'adm.bbnode@gmail.com';
-              db['id'][0]['name'] = 'ken';
-
-              log(db['id'][0]['email']);
+                            }
 
 
-              db['x']['email-id'] = [];
-              db['x']['email-id']['adm.bbnode@gmail.com'] = 0;
-
-              var id = db['x']['email-id']['adm.bbnode@gmail.com'];
-              log(db['id'][id]['name']);
-              db['postid'] = [];
-              db['postid'][0] = [];
-              db['postid'][0]['userid'] = 0;
-              db['postid'][0]['time'] = 20010101125900;
-              db['postid'][0]['html'] = '';
-              db['postid'][0]['tag'] = [];
-              db['postid'][0]['tag'][db['postid'][0]['tag'].length] = '全国';
-              db['postid'][0]['tag'][db['postid'][0]['tag'].length] = '兵庫';
-              db['postid'][0]['tag'][db['postid'][0]['tag'].length] = '神戸（兵庫）';
-              db['postid'][0]['tag'][db['postid'][0]['tag'].length] = '求人';
-
-              db['s']['tag'] = [];
-
-              db['s']['tag']['全国'] = _([]);
-              db['s']['tag']['兵庫'] = _([]);
-              db['s']['tag']['神戸（兵庫）'] = _([]);
-              db['s']['tag']['求人'] = _([]);
-
-              db['s']['tag']['全国'] = db['s']['tag']['全国'].concat([0]);
-              db['s']['tag']['兵庫'] = db['s']['tag']['兵庫'].concat([0]);
-              db['s']['tag']['神戸（兵庫）'] = db['s']['tag']['神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
-              db['s']['tag']['求人'] = db['s']['tag']['求人'].concat([0]); //add postid=0 to tag='tag'
-
-
-              var x = db['s']['tag']['求人']
-                .intersection(db['s']['tag']['神戸（兵庫）'])
-                .toArray();
-
-              log(x);
+                          })
+                        .on('disconnect',
+                          function()
+                          {
+                            log('disconnected: ' + socket.id);
+                          })
+                        .on('reconnect',
+                          function()
+                          {
+                            log('reconnected: ' + socket.id);
+                          });
 
 
 
-              //=======================
-            });
-      });
-});
+                    });
+
+                //===========
+
+
+
+
+                //===================
+                if (!g.d['x'])
+                {
+                  log('db is blank, need to construct now');
+                  g.d['x'] = []; //index for g.d
+                  g.d['tag'] = [];
+
+                  g.d['tag']['post'] = [];
+                  g.d['tag']['thread'] = [];
+
+                  g.d['forumconfig'].category
+                    .map(function(category)
+                    {
+                      log(category);
+
+                      g.d['tag']['post']['*' + category.title] = _([]);
+                      g.d['tag']['thread']['*' + category.title] = _([]);
+                    });
+
+
+                  g.d['forumconfig'].area
+                    .map(function(area)
+                    {
+                      log(area);
+
+                      g.d['tag']['post']['*' + area] = _([]);
+                      g.d['tag']['thread']['*' + area] = _([]);
+                    });
+
+                  //============
+                  log('==========================!!');
+                  log(g.d);
+                  //=============
+
+                  g.d['id'] = []; // user id
+
+                  g.d['id'][0] = [];
+                  g.d['id'][0]['email'] = 'adm.bbnode@gmail.com';
+                  g.d['id'][0]['name'] = 'ken';
+
+                  log(g.d['id'][0]['email']);
+
+
+                  g.d['x']['email-id'] = [];
+                  g.d['x']['email-id']['adm.bbnode@gmail.com'] = 0;
+
+                  var id = g.d['x']['email-id']['adm.bbnode@gmail.com'];
+                  log(g.d['id'][id]['name']);
+                  g.d['postid'] = [];
+                  g.d['postid'][0] = [];
+                  g.d['postid'][0]['userid'] = 0;
+                  g.d['postid'][0]['time'] = 20010101125900;
+                  g.d['postid'][0]['html'] = 'hello';
+                  g.d['postid'][0]['threadid'] = 100;
+                  g.d['postid'][0]['threadtitle'] = null;
+                  g.d['postid'][0]['threadorder'] = 2;
+                  g.d['postid'][0]['*tag'] = _([]);
+                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['全国']);
+
+
+                  g.d['tag']['post']['*全国'] = g.d['tag']['post']['*全国'].concat([0]);
+                  g.d['tag']['post']['*兵庫'] = g.d['tag']['post']['*兵庫'].concat([0]);
+                  g.d['tag']['post']['*神戸（兵庫）'] = g.d['tag']['post']['*神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['post']['*求人'] = g.d['tag']['post']['*求人'].concat([0]); //add postid=0 to tag='tag'
+
+                  g.d['tag']['thread']['*全国'] = g.d['tag']['thread']['*全国'].concat([0]);
+                  g.d['tag']['thread']['*兵庫'] = g.d['tag']['thread']['*兵庫'].concat([0]);
+                  g.d['tag']['thread']['*神戸（兵庫）'] = g.d['tag']['thread']['*神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['thread']['*求人'] = g.d['tag']['thread']['*求人'].concat([0]); //add postid=0 to tag='tag'
+
+
+
+                  var x = g.d['tag']['thread']['*求人']
+                    .intersection(g.d['tag']['thread']['*神戸（兵庫）'])
+                    .toArray();
+                  log(x);
+
+                }
+
+                //=======================
+              });
+        });
+  });
+
+  //try============================================================================
+}
+catch (err)
+{
+  // handle the error safely
+  console.log(err);
+}

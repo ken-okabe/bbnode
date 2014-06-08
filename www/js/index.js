@@ -1,8 +1,7 @@
 /* jshint node: true */
 /* jshint sub: true */
-
+/* global window, $,alert,history */
 'use strict';
-/*global window, $,alert*/
 
 var log = function(msg)
 {
@@ -10,38 +9,109 @@ var log = function(msg)
 };
 log('init5');
 
+var g = window;
+
+g.io = {};
+
+require('watchjs');
+
 $('document').ready(function()
 {
+  //===Key Handler==========================
+  g.io.path = decodeURIComponent(window.location.pathname);;
+
+  $(window).on('popstate', function(_event)
+  {
+    alert('popstate');
+
+    g.io.path = decodeURIComponent(window.location.pathname);
+  });
+
+  g.io.pathpush = function(path)
+  {
+    history.pushState(null, null, path);
+    g.io.path = decodeURIComponent(window.location.pathname);
+  };
+
+  //===Modules==========================
   var modules = [];
 
   // add modules here manually ================
-  modules['test'] = require('../modules/test/www/client_module.js');
-
-
-  //=======================================
-  var io = require('socket.io-client');
-  var socket = io.connect(window.location.hostname,
+  modules['areacontrol'] = require('../modules/areacontrol/www/client_module.js');
+  modules['categorycontrol'] = require('../modules/categorycontrol/www/client_module.js');
+  //===Socket==========================
+  var socketio = require('socket.io-client');
+  g.io.socket = socketio.connect(window.location.hostname,
   {
     'reconnect': true,
     'reconnection delay': 500,
     'max reconnection attempts': 10
   });
 
-  socket
+  g.io.socket
     .on('connect', function()
     {
       log('socket connected');
 
-      socket.emit('msg',
-        {
-          cmd: 'socketid',
-          sub: null,
-          data: null
-        },
-        function(socketid)
-        {
-          log(socketid);
-        }
+      g.io.socket
+        .emit('msg',
+          {
+            cmd: 'socketid',
+            sub: null,
+            data: null
+          },
+          function(socketid)
+          {
+            log(socketid);
+          }
+      )
+        .emit('msg',
+          {
+            cmd: 'modulecount',
+            sub: null,
+            data: null
+          },
+          function(n)
+          {
+            log(n);
+            if (Object.keys(modules).length !== n)
+            {
+              alert('module load mismatch!!');
+            }
+          }
+      )
+        .emit('msg',
+          {
+            cmd: 'bbnamecategory',
+            sub: null,
+            data: null
+          },
+          function(data)
+          {
+            log('@@@@@@@@@@@@@@');
+            log(data.bbname);
+            log(data.categories);
+            g.io.bbname = data.bbname;
+            g.io.categories = data.categories;
+
+            //======emit ready  <1>  and <2> to initiate module load on server
+            g.io.socket
+              .emit('msg',
+                {
+                  cmd: 'readyformodules',
+                  sub: null,
+                  data: null
+                },
+                function()
+                {
+                  log();
+                }
+            );
+
+
+            //=============
+
+          }
       );
 
     })
@@ -53,11 +123,17 @@ $('document').ready(function()
     .on('msg', function(msg, f)
     {
       log(msg);
-      if (msg.cmd === 'module')
+
+      if (msg.cmd === 'module') //    <3>
       {
-        log('loading module @' + msg.data);
-        modules[msg.data].socket(socket);
+        log('loading module @' + msg.data); //modeleready onserver
+        modules[msg.data].start();
       }
+
     });
+
+
+
+
 
 });
