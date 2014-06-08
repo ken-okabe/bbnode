@@ -12,16 +12,18 @@ var log = function(msg)
   console.log(moduleID + ':', msg);
 };
 
+
 var task = function()
 {
+
   var keys = g.io.path.split('/');
   var key = keys[3];
   if (key === 'category')
   {
     var category = keys[4];　
     log(category);
-    var $main = $('#main');
-    $main.html('category');
+    g.io.$main = $('#main');
+    g.io.$list_thread = g.io.$main.html('<div id = "list_thread"/>');
 
     var area = keys[2];
     g.io.socket
@@ -33,11 +35,19 @@ var task = function()
         },
         function(result)
         {
-          log(result);
+          log('============');
+
+          var obj = JSON.parse(result);
+          log(obj);
+
+
+
+          g.io.list_thread = obj;
+          g.io.list_threadFlag = !g.io.list_threadFlag;
+
         }
     );
 
-    //    var $row = $main.append('<div class="row"/>');　
 
   }
 };
@@ -47,7 +57,7 @@ watch(g.io, 'path', function()
 {
   log('!!!!!!!!!!!!!!!!');
   //=====================================
-  alert('category-obseve');
+
   //=====================================
 
   task();
@@ -59,6 +69,7 @@ watch(g.io, 'path', function()
 var init = function()
 {
   log('init');
+  g.io.list_threadFlag = false;
 };
 
 init();

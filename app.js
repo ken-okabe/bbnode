@@ -67,6 +67,89 @@ try
 {
   //============================================================================
   //clone g.d--------
+  //call back
+  /*
+
+  var _ = require('lazy.js');
+
+  var WebSocket = require('ws');
+  var WebSocketStream = require('WebSocketStreamPlus');
+
+  var rpc = require('rpc-streamx');
+
+  var dbServerURL = 'http://localhost:3001';
+  var ws = new WebSocket(dbServerURL);
+  var c = new WebSocketStream(ws);
+
+  var db = rpc();
+  c
+    .pipe(db)
+    .pipe(c)
+    .on('close', function()
+    {
+      ws.close();
+      console.log('peer dbHolder Server c close');
+
+    })
+    .on('error', function()
+    {
+      ws.close();
+      console.log('peer dbHolder Server c error');
+
+    })
+    .on('finish', function()
+    {
+      ws.close();
+      console.log('peer dbHolder Server c finish');
+
+    });
+
+  db
+    .rpc('set',
+      {
+        index: [],
+        val: 3
+      },
+      function(msg)
+      {
+        console.log(msg);
+      });
+
+  db
+    .rpc('create',
+      {
+        index: []
+      },
+      function(msg)
+      {
+        console.log(msg);
+      });
+
+  db
+    .rpc('createS',
+      {
+        index: []
+      },
+      function(msg)
+      {
+        console.log(msg);
+      });
+
+  db
+    .rpc('add',
+      {
+        index: [],
+        val: 3
+      },
+      function(msg)
+      {
+        console.log(msg);
+      });
+
+
+
+  */
+
 
   g.d = [];
 
@@ -302,8 +385,13 @@ try
                 {
                   log('db is blank, need to construct now');
                   g.d['x'] = []; //index for g.d
-                  g.d['tag'] = [];
+                  g.d['x']['email-id'] = [];
 
+                  g.d['id'] = []; // user id
+
+                  g.d['postid'] = [];
+
+                  g.d['tag'] = [];
                   g.d['tag']['post'] = [];
                   g.d['tag']['thread'] = [];
 
@@ -331,7 +419,7 @@ try
                   log(g.d);
                   //=============
 
-                  g.d['id'] = []; // user id
+
 
                   g.d['id'][0] = [];
                   g.d['id'][0]['email'] = 'adm.bbnode@gmail.com';
@@ -339,23 +427,39 @@ try
 
                   log(g.d['id'][0]['email']);
 
-
-                  g.d['x']['email-id'] = [];
                   g.d['x']['email-id']['adm.bbnode@gmail.com'] = 0;
 
                   var id = g.d['x']['email-id']['adm.bbnode@gmail.com'];
                   log(g.d['id'][id]['name']);
-                  g.d['postid'] = [];
-                  g.d['postid'][0] = [];
+
+                  g.d['postid'][0] = {};
                   g.d['postid'][0]['userid'] = 0;
                   g.d['postid'][0]['time'] = 20010101125900;
                   g.d['postid'][0]['html'] = 'hello';
                   g.d['postid'][0]['threadid'] = 100;
-                  g.d['postid'][0]['threadtitle'] = null;
-                  g.d['postid'][0]['threadorder'] = 2;
+                  g.d['postid'][0]['threadtitle'] = 'テスト求人スレッド';
+                  g.d['postid'][0]['threadorder'] = 1;
                   g.d['postid'][0]['*tag'] = _([]);
                   g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['全国']);
+                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['兵庫']);
+                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['神戸（兵庫）']);
+                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['求人']);
 
+
+                  g.d['postid'][1] = {};
+                  g.d['postid'][1]['userid'] = 0;
+                  g.d['postid'][1]['time'] = 20010101125901;
+                  g.d['postid'][1]['html'] = 'hello2';
+                  g.d['postid'][1]['threadid'] = 101;
+                  g.d['postid'][1]['threadtitle'] = 'テスト求人スレッド2';
+                  g.d['postid'][1]['threadorder'] = 1;
+                  g.d['postid'][1]['*tag'] = _([]);
+                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['全国']);
+                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['兵庫']);
+                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['神戸（兵庫）']);
+                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['求人']);
+
+                  // todo auto func
 
                   g.d['tag']['post']['*全国'] = g.d['tag']['post']['*全国'].concat([0]);
                   g.d['tag']['post']['*兵庫'] = g.d['tag']['post']['*兵庫'].concat([0]);
@@ -367,14 +471,18 @@ try
                   g.d['tag']['thread']['*神戸（兵庫）'] = g.d['tag']['thread']['*神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
                   g.d['tag']['thread']['*求人'] = g.d['tag']['thread']['*求人'].concat([0]); //add postid=0 to tag='tag'
 
+                  g.d['tag']['post']['*全国'] = g.d['tag']['post']['*全国'].concat([1]);
+                  g.d['tag']['post']['*兵庫'] = g.d['tag']['post']['*兵庫'].concat([1]);
+                  g.d['tag']['post']['*神戸（兵庫）'] = g.d['tag']['post']['*神戸（兵庫）'].concat([1]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['post']['*求人'] = g.d['tag']['post']['*求人'].concat([1]); //add postid=0 to tag='tag'
 
-
-                  var x = g.d['tag']['thread']['*求人']
-                    .intersection(g.d['tag']['thread']['*神戸（兵庫）'])
-                    .toArray();
-                  log(x);
+                  g.d['tag']['thread']['*全国'] = g.d['tag']['thread']['*全国'].concat([1]);
+                  g.d['tag']['thread']['*兵庫'] = g.d['tag']['thread']['*兵庫'].concat([1]);
+                  g.d['tag']['thread']['*神戸（兵庫）'] = g.d['tag']['thread']['*神戸（兵庫）'].concat([1]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['thread']['*求人'] = g.d['tag']['thread']['*求人'].concat([1]); //add postid=0 to tag='tag'
 
                 }
+
 
                 //=======================
               });

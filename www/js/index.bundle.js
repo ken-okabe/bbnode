@@ -4404,7 +4404,7 @@ function hasBinary(data) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":47,"isarray":33}],33:[function(require,module,exports){
+},{"buffer":48,"isarray":33}],33:[function(require,module,exports){
 module.exports = Array.isArray || function (arr) {
   return Object.prototype.toString.call(arr) == '[object Array]';
 };
@@ -4688,7 +4688,7 @@ function isBuf(obj) {
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"buffer":47,"isarray":39}],38:[function(require,module,exports){
+},{"buffer":48,"isarray":39}],38:[function(require,module,exports){
 (function (global,Buffer){
 
 /**
@@ -5076,7 +5076,7 @@ function error(data){
 }
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./binary":37,"buffer":47,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
+},{"./binary":37,"buffer":48,"debug":8,"emitter":9,"isarray":39,"json3":40}],39:[function(require,module,exports){
 module.exports=require(33)
 },{}],40:[function(require,module,exports){
 /*! JSON v3.2.6 | http://bestiejs.github.io/json3 | Copyright 2012-2013, Kit Cambridge | http://kit.mit-license.org */
@@ -6366,6 +6366,23 @@ var log = function(msg)
 };
 log('init5');
 
+
+Object.defineProperty(Object.prototype, 'map',
+{
+  value: function(f, ctx)
+  {
+    ctx = ctx || this;
+    var self = this,
+      result = {};
+    Object.keys(self).forEach(function(v)
+    {
+      result[v] = f.call(ctx, self[v], v, self);
+    });
+    return result;
+  }
+});
+
+
 var g = window;
 
 g.io = {};
@@ -6375,11 +6392,11 @@ require('watchjs');
 $('document').ready(function()
 {
   //===Key Handler==========================
-  g.io.path = decodeURIComponent(window.location.pathname);;
+  g.io.path = decodeURIComponent(window.location.pathname);
 
   $(window).on('popstate', function(_event)
   {
-    alert('popstate');
+    // alert('popstate');
 
     g.io.path = decodeURIComponent(window.location.pathname);
   });
@@ -6388,14 +6405,21 @@ $('document').ready(function()
   {
     history.pushState(null, null, path);
     g.io.path = decodeURIComponent(window.location.pathname);
+
+    $('html,body').animate(
+    {
+      scrollTop: 0
+    }, 'fast');
+
   };
 
   //===Modules==========================
   var modules = [];
 
   // add modules here manually ================
-  modules['areacontrol'] = require('../modules/areacontrol/www/client_module.js');
-  modules['categorycontrol'] = require('../modules/categorycontrol/www/client_module.js');
+  modules['areacontrol'] = require('../modules/areacontrol/client/client_module.js');
+  modules['categorycontrol'] = require('../modules/categorycontrol/client/client_module.js');
+  modules['list_thread'] = require('../modules/list_thread/client/client_module.js');
   //===Socket==========================
   var socketio = require('socket.io-client');
   g.io.socket = socketio.connect(window.location.hostname,
@@ -6495,7 +6519,7 @@ $('document').ready(function()
 
 });
 
-},{"../modules/areacontrol/www/client_module.js":45,"../modules/categorycontrol/www/client_module.js":46,"socket.io-client":1,"watchjs":42}],45:[function(require,module,exports){
+},{"../modules/areacontrol/client/client_module.js":45,"../modules/categorycontrol/client/client_module.js":46,"../modules/list_thread/client/client_module.js":47,"socket.io-client":1,"watchjs":42}],45:[function(require,module,exports){
 /* jshint node: true */
 /* jshint sub: true */
 /* global window, $,alert */
@@ -6512,6 +6536,7 @@ var log = function(msg)
 
 var task = function()
 {
+  //alert(moduleID);
   //=====================================
   var keys = g.io.path.split('/');
   var key = keys[1];
@@ -6570,8 +6595,6 @@ watch(g.io, 'path', function()
 {
   log('!!!!!!!!!!!!!!!!');
   //=====================================
-  alert('area-obseve');
-  //=====================================
 
   task();
 
@@ -6610,16 +6633,18 @@ var log = function(msg)
   console.log(moduleID + ':', msg);
 };
 
+
 var task = function()
 {
+
   var keys = g.io.path.split('/');
   var key = keys[3];
   if (key === 'category')
   {
     var category = keys[4];　
     log(category);
-    var $main = $('#main');
-    $main.html('category');
+    g.io.$main = $('#main');
+    g.io.$list_thread = g.io.$main.html('<div id = "list_thread"/>');
 
     var area = keys[2];
     g.io.socket
@@ -6631,11 +6656,19 @@ var task = function()
         },
         function(result)
         {
-          log(result);
+          log('============');
+
+          var obj = JSON.parse(result);
+          log(obj);
+
+
+
+          g.io.list_thread = obj;
+          g.io.list_threadFlag = !g.io.list_threadFlag;
+
         }
     );
 
-    //    var $row = $main.append('<div class="row"/>');　
 
   }
 };
@@ -6645,7 +6678,7 @@ watch(g.io, 'path', function()
 {
   log('!!!!!!!!!!!!!!!!');
   //=====================================
-  alert('category-obseve');
+
   //=====================================
 
   task();
@@ -6657,6 +6690,7 @@ watch(g.io, 'path', function()
 var init = function()
 {
   log('init');
+  g.io.list_threadFlag = false;
 };
 
 init();
@@ -6671,6 +6705,96 @@ module.exports = {
 };
 
 },{"watchjs":42}],47:[function(require,module,exports){
+/* jshint node: true */
+/* jshint sub: true */
+/* global window, $,alert */
+'use strict';
+
+var moduleID = '@list_thread';
+
+var g = window;
+
+var log = function(msg)
+{
+  console.log(moduleID + ':', msg);
+};
+
+
+var task = function()
+{
+  //alert(moduleID);
+
+  //---------------
+
+  var obj = g.io.list_thread;
+
+  log(Object.keys(obj).length);
+  obj.map(function(o)
+  {
+    log('----');
+    log(o);
+
+    log(o.postid);
+    log(o.postdata);
+
+    log(o.postdata.threadtitle);
+
+    log(o.postdata.html);
+
+    log(o.postdata.time);
+
+    log('=================');
+    log(o.user);
+    // log(o.postdata['*tag'].toArray());
+
+
+
+
+
+
+    $(g.io.panel)
+      .appendTo(g.io.$list_thread);
+
+
+  });
+  //------------------
+
+
+};
+
+var watch = require("watchjs").watch;
+watch(g.io, 'list_threadFlag', function()
+{
+  log('!!!!!!!!!!!!!!!!');
+  //=====================================
+
+  task();
+
+});
+
+var init = function()
+{
+  log('init');
+  // alert('get');
+  $.get('/www/modules/list_thread/client/list_thread.html', function(data)
+  {
+    g.io.panel = data;
+  });
+
+};
+
+init();
+
+module.exports = {
+  start: function()
+  {
+    log('start');
+    //  task();
+  }
+
+};
+
+},{"watchjs":42}],48:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -7821,7 +7945,7 @@ function assert (test, message) {
   if (!test) throw new Error(message || 'Failed assertion')
 }
 
-},{"base64-js":48,"ieee754":49}],48:[function(require,module,exports){
+},{"base64-js":49,"ieee754":50}],49:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -7944,7 +8068,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	module.exports.fromByteArray = uint8ToBase64
 }())
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 exports.read = function(buffer, offset, isLE, mLen, nBytes) {
   var e, m,
       eLen = nBytes * 8 - mLen - 1,

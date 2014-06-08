@@ -2,7 +2,7 @@
 /* jshint sub: true */
 'use strict';
 
-var moduleID = '@areacontrol';
+var moduleID = '@list_thread';
 
 var log = function(msg)
 {
@@ -27,7 +27,6 @@ var init = function()
 
 init();
 
-
 module.exports = {
   //on connect or reconnect
   socket: function(socket)
@@ -42,10 +41,7 @@ module.exports = {
           if (msg.cmd === moduleID)
           {
             log(msg);
-            if (msg.sub === 'category')
-            {
-              f(g.d['forumconfig'].category);
-            }
+
           }
         });
   }

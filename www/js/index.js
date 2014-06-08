@@ -9,6 +9,23 @@ var log = function(msg)
 };
 log('init5');
 
+
+Object.defineProperty(Object.prototype, 'map',
+{
+  value: function(f, ctx)
+  {
+    ctx = ctx || this;
+    var self = this,
+      result = {};
+    Object.keys(self).forEach(function(v)
+    {
+      result[v] = f.call(ctx, self[v], v, self);
+    });
+    return result;
+  }
+});
+
+
 var g = window;
 
 g.io = {};
@@ -18,11 +35,11 @@ require('watchjs');
 $('document').ready(function()
 {
   //===Key Handler==========================
-  g.io.path = decodeURIComponent(window.location.pathname);;
+  g.io.path = decodeURIComponent(window.location.pathname);
 
   $(window).on('popstate', function(_event)
   {
-    alert('popstate');
+    // alert('popstate');
 
     g.io.path = decodeURIComponent(window.location.pathname);
   });
@@ -31,14 +48,21 @@ $('document').ready(function()
   {
     history.pushState(null, null, path);
     g.io.path = decodeURIComponent(window.location.pathname);
+
+    $('html,body').animate(
+    {
+      scrollTop: 0
+    }, 'fast');
+
   };
 
   //===Modules==========================
   var modules = [];
 
   // add modules here manually ================
-  modules['areacontrol'] = require('../modules/areacontrol/www/client_module.js');
-  modules['categorycontrol'] = require('../modules/categorycontrol/www/client_module.js');
+  modules['areacontrol'] = require('../modules/areacontrol/client/client_module.js');
+  modules['categorycontrol'] = require('../modules/categorycontrol/client/client_module.js');
+  modules['list_thread'] = require('../modules/list_thread/client/client_module.js');
   //===Socket==========================
   var socketio = require('socket.io-client');
   g.io.socket = socketio.connect(window.location.hostname,
