@@ -48,8 +48,8 @@ module.exports = {
               var area = tags[0];
               var category = tags[1];
 
-              var x = g.d['tag']['thread']['*' + category]
-                .intersection(g.d['tag']['thread']['*' + area])
+              var x = g.d['tag']['thread']['_' + category]
+                .intersection(g.d['tag']['thread']['_' + area])
                 .toArray();
 
 
@@ -61,11 +61,13 @@ module.exports = {
                 var userid = g.d['postid'][postid]['userid'];
                 log(userid);
 
+                var postdata = g.d['postid'][postid];
+
                 result[Object.keys(result).length] = {
                   postid: postid,
-                  postdata: g.d['postid'][postid],
-                  user: g.d['id'][userid]['name']
-
+                  postdata: postdata,
+                  user: g.d['id'][userid]['name'],
+                  tags: postdata._tag.toArray()
                 };
               });
 

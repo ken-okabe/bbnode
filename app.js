@@ -400,8 +400,8 @@ try
                     {
                       log(category);
 
-                      g.d['tag']['post']['*' + category.title] = _([]);
-                      g.d['tag']['thread']['*' + category.title] = _([]);
+                      g.d['tag']['post']['_' + category.title] = _([]);
+                      g.d['tag']['thread']['_' + category.title] = _([]);
                     });
 
 
@@ -410,8 +410,8 @@ try
                     {
                       log(area);
 
-                      g.d['tag']['post']['*' + area] = _([]);
-                      g.d['tag']['thread']['*' + area] = _([]);
+                      g.d['tag']['post']['_' + area] = _([]);
+                      g.d['tag']['thread']['_' + area] = _([]);
                     });
 
                   //============
@@ -439,11 +439,11 @@ try
                   g.d['postid'][0]['threadid'] = 100;
                   g.d['postid'][0]['threadtitle'] = 'テスト求人スレッド';
                   g.d['postid'][0]['threadorder'] = 1;
-                  g.d['postid'][0]['*tag'] = _([]);
-                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['全国']);
-                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['兵庫']);
-                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['神戸（兵庫）']);
-                  g.d['postid'][0]['*tag'] = g.d['postid'][0]['*tag'].concat(['求人']);
+                  g.d['postid'][0]['_tag'] = _([]);
+                  g.d['postid'][0]['_tag'] = g.d['postid'][0]['_tag'].concat(['全国']);
+                  g.d['postid'][0]['_tag'] = g.d['postid'][0]['_tag'].concat(['兵庫']);
+                  g.d['postid'][0]['_tag'] = g.d['postid'][0]['_tag'].concat(['神戸（兵庫）']);
+                  g.d['postid'][0]['_tag'] = g.d['postid'][0]['_tag'].concat(['求人']);
 
 
                   g.d['postid'][1] = {};
@@ -453,33 +453,33 @@ try
                   g.d['postid'][1]['threadid'] = 101;
                   g.d['postid'][1]['threadtitle'] = 'テスト求人スレッド2';
                   g.d['postid'][1]['threadorder'] = 1;
-                  g.d['postid'][1]['*tag'] = _([]);
-                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['全国']);
-                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['兵庫']);
-                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['神戸（兵庫）']);
-                  g.d['postid'][1]['*tag'] = g.d['postid'][1]['*tag'].concat(['求人']);
+                  g.d['postid'][1]['_tag'] = _([]);
+                  g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['全国']);
+                  g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['兵庫']);
+                  g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['神戸（兵庫）']);
+                  g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['求人']);
 
                   // todo auto func
 
-                  g.d['tag']['post']['*全国'] = g.d['tag']['post']['*全国'].concat([0]);
-                  g.d['tag']['post']['*兵庫'] = g.d['tag']['post']['*兵庫'].concat([0]);
-                  g.d['tag']['post']['*神戸（兵庫）'] = g.d['tag']['post']['*神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
-                  g.d['tag']['post']['*求人'] = g.d['tag']['post']['*求人'].concat([0]); //add postid=0 to tag='tag'
+                  g.d['tag']['post']['_全国'] = g.d['tag']['post']['_全国'].concat([0]);
+                  g.d['tag']['post']['_兵庫'] = g.d['tag']['post']['_兵庫'].concat([0]);
+                  g.d['tag']['post']['_神戸（兵庫）'] = g.d['tag']['post']['_神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['post']['_求人'] = g.d['tag']['post']['_求人'].concat([0]); //add postid=0 to tag='tag'
 
-                  g.d['tag']['thread']['*全国'] = g.d['tag']['thread']['*全国'].concat([0]);
-                  g.d['tag']['thread']['*兵庫'] = g.d['tag']['thread']['*兵庫'].concat([0]);
-                  g.d['tag']['thread']['*神戸（兵庫）'] = g.d['tag']['thread']['*神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
-                  g.d['tag']['thread']['*求人'] = g.d['tag']['thread']['*求人'].concat([0]); //add postid=0 to tag='tag'
+                  g.d['tag']['thread']['_全国'] = g.d['tag']['thread']['_全国'].concat([0]);
+                  g.d['tag']['thread']['_兵庫'] = g.d['tag']['thread']['_兵庫'].concat([0]);
+                  g.d['tag']['thread']['_神戸（兵庫）'] = g.d['tag']['thread']['_神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['thread']['_求人'] = g.d['tag']['thread']['_求人'].concat([0]); //add postid=0 to tag='tag'
 
-                  g.d['tag']['post']['*全国'] = g.d['tag']['post']['*全国'].concat([1]);
-                  g.d['tag']['post']['*兵庫'] = g.d['tag']['post']['*兵庫'].concat([1]);
-                  g.d['tag']['post']['*神戸（兵庫）'] = g.d['tag']['post']['*神戸（兵庫）'].concat([1]); //add postid=0 to tag='兵庫県神戸市
-                  g.d['tag']['post']['*求人'] = g.d['tag']['post']['*求人'].concat([1]); //add postid=0 to tag='tag'
+                  g.d['tag']['post']['_全国'] = g.d['tag']['post']['_全国'].concat([1]);
+                  g.d['tag']['post']['_兵庫'] = g.d['tag']['post']['_兵庫'].concat([1]);
+                  g.d['tag']['post']['_神戸（兵庫）'] = g.d['tag']['post']['_神戸（兵庫）'].concat([1]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['post']['_求人'] = g.d['tag']['post']['_求人'].concat([1]); //add postid=0 to tag='tag'
 
-                  g.d['tag']['thread']['*全国'] = g.d['tag']['thread']['*全国'].concat([1]);
-                  g.d['tag']['thread']['*兵庫'] = g.d['tag']['thread']['*兵庫'].concat([1]);
-                  g.d['tag']['thread']['*神戸（兵庫）'] = g.d['tag']['thread']['*神戸（兵庫）'].concat([1]); //add postid=0 to tag='兵庫県神戸市
-                  g.d['tag']['thread']['*求人'] = g.d['tag']['thread']['*求人'].concat([1]); //add postid=0 to tag='tag'
+                  g.d['tag']['thread']['_全国'] = g.d['tag']['thread']['_全国'].concat([1]);
+                  g.d['tag']['thread']['_兵庫'] = g.d['tag']['thread']['_兵庫'].concat([1]);
+                  g.d['tag']['thread']['_神戸（兵庫）'] = g.d['tag']['thread']['_神戸（兵庫）'].concat([1]); //add postid=0 to tag='兵庫県神戸市
+                  g.d['tag']['thread']['_求人'] = g.d['tag']['thread']['_求人'].concat([1]); //add postid=0 to tag='tag'
 
                 }
 

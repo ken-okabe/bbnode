@@ -118,7 +118,7 @@ $('document').ready(function()
             g.io.bbname = data.bbname;
             g.io.categories = data.categories;
 
-            //======emit ready  <1>  and <2> to initiate module load on server
+            //======emit ready  <1>  and  to initiate module load on server<2>
             g.io.socket
               .emit('msg',
                 {

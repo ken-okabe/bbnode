@@ -6,7 +6,7 @@
 var moduleID = '@list_thread';
 
 var g = window;
-
+var _ = require('lazy.js');
 var log = function(msg)
 {
   console.log(moduleID + ':', msg);
@@ -28,7 +28,6 @@ var task = function()
     log(o);
 
     log(o.postid);
-    log(o.postdata);
 
     log(o.postdata.threadtitle);
 
@@ -36,9 +35,8 @@ var task = function()
 
     log(o.postdata.time);
 
-    log('=================');
     log(o.user);
-    // log(o.postdata['*tag'].toArray());
+    log(o.tags);
 
 
 
