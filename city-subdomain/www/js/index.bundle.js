@@ -12387,6 +12387,29 @@ $('document').ready(function()
     }, 'fast');
 
   };
+  /*
+  $('a')
+    .on('click', function(event)
+    {
+      event.preventDefault();
+
+
+      var link = $(this)
+        .attr("href");
+      // alert(link);
+      //   window.open(link);
+      ref =
+        window.open(link, '_blank', 'location=yes,hidden=no,EnableViewPortScale=yes,closebuttoncaption=閉じてアプリに戻る');
+      ref.addEventListener('exit', prepareAd);
+
+    });
+*/
+  $('div.link')
+    .on('click', function()
+    {
+      g.io.pathpush(this.attr('target'));
+
+    });
 
   //===Modules==========================
   var modules = [];
@@ -12521,11 +12544,15 @@ var task = function()
     log('----------');
     log(g.io.bbname);
 
-    $('#bbname').html(area + ' ' + g.io.bbname);
+    $('#bbname')
+      .text(area + ' ' + g.io.bbname)
+      .addClass('link')
+      .attr('target', '/area/' + area);
+
     $('#bbtitle').html(area);
     $('#bbdescription').html('adfasdfasfsadfasdfasd');
 
-    // if area face page drow categories
+    // if area face page, Draw categories
     if (!keys[3])
     {
       var $main = $('#main');

@@ -48,16 +48,12 @@ var task = function()
         .map(function(category)
         {
           log(category.title);
-          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>');
-
-          $categoryDIV[category.title]
+          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>')
+            .attr('class', 'link')
+            .attr('target', '/area/' + area + '/category/' + category.title)
             .append('<h1>' + category.title + '</hi>')
-            .append('<p>' + category.sub + '</p>')
-            .on('click', function()
-            {
-              g.io.pathpush('/area/' + area + '/category/' + category.title);
+            .append('<p>' + category.sub + '</p>');
 
-            });
 
           $row
             .append($categoryDIV[category.title]);

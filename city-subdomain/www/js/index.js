@@ -55,6 +55,29 @@ $('document').ready(function()
     }, 'fast');
 
   };
+  /*
+  $('a')
+    .on('click', function(event)
+    {
+      event.preventDefault();
+
+
+      var link = $(this)
+        .attr("href");
+      // alert(link);
+      //   window.open(link);
+      ref =
+        window.open(link, '_blank', 'location=yes,hidden=no,EnableViewPortScale=yes,closebuttoncaption=閉じてアプリに戻る');
+      ref.addEventListener('exit', prepareAd);
+
+    });
+*/
+  $('div.link')
+    .on('click', function()
+    {
+      g.io.pathpush(this.attr('target'));
+
+    });
 
   //===Modules==========================
   var modules = [];
