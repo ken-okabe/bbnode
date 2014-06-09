@@ -12734,16 +12734,32 @@ var task = function()
     log('----');
     log(o);
 
-    log(o.postid);
+    /*
+result[Object.keys(result).length] = {
+  postid: postid,
+  postdata: postdata,
+  tags: tags,
+  username: username,
+  threaddata: threaddata,
+  threadposts: threadposts
+};
+*/
 
-    log(o.postdata.threadtitle);
+
+
+
+    log(o.postid);
 
     log(o.postdata.html);
 
     log(o.postdata.time);
-
-    log(o.user);
     log(o.tags);
+    log(o.username);
+
+    log(o.threaddata.title);
+    log(o.threadposts);
+
+
 
 
 

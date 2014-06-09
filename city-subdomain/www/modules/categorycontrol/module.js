@@ -61,13 +61,24 @@ module.exports = {
                 var userid = g.d['postid'][postid]['userid'];
                 log(userid);
 
+                var username = g.d['id'][userid]['name'];
+
                 var postdata = g.d['postid'][postid];
+                var tags = postdata['_tag'].toArray();
+
+                var threadid = postdata['threadid']; //100
+
+                var threaddata = g.d['threadid'][threadid];
+                var threadposts = threaddata['_postid'].toArray();
+                log(threadposts);
 
                 result[Object.keys(result).length] = {
                   postid: postid,
                   postdata: postdata,
-                  user: g.d['id'][userid]['name'],
-                  tags: postdata._tag.toArray()
+                  tags: tags,
+                  username: username,
+                  threaddata: threaddata,
+                  threadposts: threadposts
                 };
               });
 

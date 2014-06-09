@@ -1,5 +1,8 @@
 /* jshint node: true */
 /* jshint sub: true */
+/* global __dirname */
+
+
 'use strict';
 
 var log = function(msg)
@@ -384,16 +387,17 @@ try
                 if (!g.d['x'])
                 {
                   log('db is blank, need to construct now');
-                  g.d['x'] = []; //index for g.d
-                  g.d['x']['email-id'] = [];
+                  g.d['x'] = {}; //index for g.d
+                  g.d['x']['email-id'] = {};
 
                   g.d['id'] = []; // user id
 
                   g.d['postid'] = [];
+                  g.d['threadid'] = [];
 
-                  g.d['tag'] = [];
-                  g.d['tag']['post'] = [];
-                  g.d['tag']['thread'] = [];
+                  g.d['tag'] = {};
+                  g.d['tag']['post'] = {};
+                  g.d['tag']['thread'] = {};
 
                   g.d['forumconfig'].category
                     .map(function(category)
@@ -421,7 +425,7 @@ try
 
 
 
-                  g.d['id'][0] = [];
+                  g.d['id'][0] = {};
                   g.d['id'][0]['email'] = 'adm.bbnode@gmail.com';
                   g.d['id'][0]['name'] = 'ken';
 
@@ -437,8 +441,6 @@ try
                   g.d['postid'][0]['time'] = 20010101125900;
                   g.d['postid'][0]['html'] = 'hello';
                   g.d['postid'][0]['threadid'] = 100;
-                  g.d['postid'][0]['threadtitle'] = 'テスト求人スレッド';
-                  g.d['postid'][0]['threadorder'] = 1;
                   g.d['postid'][0]['_tag'] = _([]);
                   g.d['postid'][0]['_tag'] = g.d['postid'][0]['_tag'].concat(['全国']);
                   g.d['postid'][0]['_tag'] = g.d['postid'][0]['_tag'].concat(['兵庫']);
@@ -451,8 +453,6 @@ try
                   g.d['postid'][1]['time'] = 20010101125901;
                   g.d['postid'][1]['html'] = 'hello2';
                   g.d['postid'][1]['threadid'] = 101;
-                  g.d['postid'][1]['threadtitle'] = 'テスト求人スレッド2';
-                  g.d['postid'][1]['threadorder'] = 1;
                   g.d['postid'][1]['_tag'] = _([]);
                   g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['全国']);
                   g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['兵庫']);
@@ -460,6 +460,12 @@ try
                   g.d['postid'][1]['_tag'] = g.d['postid'][1]['_tag'].concat(['求人']);
 
                   // todo auto func
+
+
+                  g.d['threadid'][100] = {};
+                  g.d['threadid'][100]['title'] = 'テスト求人スレッド';
+                  g.d['threadid'][100]['_postid'] = _([]);
+                  g.d['threadid'][100]['_postid'] = g.d['threadid'][100]['_postid'].concat([0]);
 
                   g.d['tag']['post']['_全国'] = g.d['tag']['post']['_全国'].concat([0]);
                   g.d['tag']['post']['_兵庫'] = g.d['tag']['post']['_兵庫'].concat([0]);
@@ -470,6 +476,13 @@ try
                   g.d['tag']['thread']['_兵庫'] = g.d['tag']['thread']['_兵庫'].concat([0]);
                   g.d['tag']['thread']['_神戸（兵庫）'] = g.d['tag']['thread']['_神戸（兵庫）'].concat([0]); //add postid=0 to tag='兵庫県神戸市
                   g.d['tag']['thread']['_求人'] = g.d['tag']['thread']['_求人'].concat([0]); //add postid=0 to tag='tag'
+
+
+
+                  g.d['threadid'][101] = {};
+                  g.d['threadid'][101]['title'] = 'テスト求人スレッド2';
+                  g.d['threadid'][101]['_postid'] = _([]);
+                  g.d['threadid'][101]['_postid'] = g.d['threadid'][101]['_postid'].concat([1]);
 
                   g.d['tag']['post']['_全国'] = g.d['tag']['post']['_全国'].concat([1]);
                   g.d['tag']['post']['_兵庫'] = g.d['tag']['post']['_兵庫'].concat([1]);
