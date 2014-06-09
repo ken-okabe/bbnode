@@ -12331,8 +12331,9 @@ if (WebSocket) ws.prototype = WebSocket.prototype;
 
 },{}],46:[function(require,module,exports){
 /* jshint node: true */
+/* jshint jquery: true */
 /* jshint sub: true */
-/* global window, $,alert,history */
+/* global window,document, $,alert,history */
 'use strict';
 
 var log = function(msg)
@@ -12340,7 +12341,6 @@ var log = function(msg)
   console.log('CORE:', msg);
 };
 log('init5');
-
 
 Object.defineProperty(Object.prototype, 'map',
 {
@@ -12364,7 +12364,7 @@ g.io = {};
 
 require('watchjs');
 
-$('document').ready(function()
+$(document).ready(function()
 {
   //===Key Handler==========================
   g.io.path = decodeURIComponent(window.location.pathname);
@@ -12404,12 +12404,12 @@ $('document').ready(function()
 
     });
 */
-  $('div.link')
-    .on('click', function()
-    {
-      g.io.pathpush(this.attr('target'));
 
-    });
+  $(document).on('click', '.link', function(e)
+  {
+    log($(this).attr('target'));
+    g.io.pathpush($(this).attr('target'));
+  });
 
   //===Modules==========================
   var modules = [];
@@ -12547,7 +12547,8 @@ var task = function()
     $('#bbname')
       .text(area + ' ' + g.io.bbname)
       .addClass('link')
-      .attr('target', '/area/' + area);
+      .attr('target', '/area/' + area)
+      .css('cursor', 'pointer');
 
     $('#bbtitle').html(area);
     $('#bbdescription').html('adfasdfasfsadfasdfasd');
@@ -12572,16 +12573,13 @@ var task = function()
         .map(function(category)
         {
           log(category.title);
-          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>');
-
-          $categoryDIV[category.title]
+          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>')
             .append('<h1>' + category.title + '</hi>')
             .append('<p>' + category.sub + '</p>')
-            .on('click', function()
-            {
-              g.io.pathpush('/area/' + area + '/category/' + category.title);
+            .addClass('link')
+            .attr('target', '/area/' + area + '/category/' + category.title)
+            .css('cursor', 'pointer');
 
-            });
 
           $row
             .append($categoryDIV[category.title]);
@@ -12618,7 +12616,7 @@ module.exports = {
     task();
   }
 
-};
+}
 
 },{"watchjs":44}],48:[function(require,module,exports){
 /* jshint node: true */
@@ -15874,8 +15872,8 @@ function forEach (xs, f) {
   }
 }
 
-}).call(this,require("UPikzY"))
-},{"./_stream_readable":69,"./_stream_writable":71,"UPikzY":61,"core-util-is":72,"inherits":59}],68:[function(require,module,exports){
+}).call(this,require("q+64fw"))
+},{"./_stream_readable":69,"./_stream_writable":71,"core-util-is":72,"inherits":59,"q+64fw":61}],68:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16885,8 +16883,8 @@ function indexOf (xs, x) {
   return -1;
 }
 
-}).call(this,require("UPikzY"))
-},{"UPikzY":61,"buffer":51,"core-util-is":72,"events":54,"inherits":59,"isarray":73,"stream":79,"string_decoder/":74}],70:[function(require,module,exports){
+}).call(this,require("q+64fw"))
+},{"buffer":51,"core-util-is":72,"events":54,"inherits":59,"isarray":73,"q+64fw":61,"stream":79,"string_decoder/":74}],70:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -17488,8 +17486,8 @@ function endWritable(stream, state, cb) {
   state.ended = true;
 }
 
-}).call(this,require("UPikzY"))
-},{"./_stream_duplex":67,"UPikzY":61,"buffer":51,"core-util-is":72,"inherits":59,"stream":79}],72:[function(require,module,exports){
+}).call(this,require("q+64fw"))
+},{"./_stream_duplex":67,"buffer":51,"core-util-is":72,"inherits":59,"q+64fw":61,"stream":79}],72:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -19254,5 +19252,5 @@ function hasOwnProperty(obj, prop) {
   return Object.prototype.hasOwnProperty.call(obj, prop);
 }
 
-}).call(this,require("UPikzY"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":81,"UPikzY":61,"inherits":59}]},{},[46])
+}).call(this,require("q+64fw"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":81,"inherits":59,"q+64fw":61}]},{},[46])

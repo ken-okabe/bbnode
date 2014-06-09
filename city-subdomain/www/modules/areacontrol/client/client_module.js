@@ -27,7 +27,8 @@ var task = function()
     $('#bbname')
       .text(area + ' ' + g.io.bbname)
       .addClass('link')
-      .attr('target', '/area/' + area);
+      .attr('target', '/area/' + area)
+      .css('cursor', 'pointer');
 
     $('#bbtitle').html(area);
     $('#bbdescription').html('adfasdfasfsadfasdfasd');
@@ -52,16 +53,13 @@ var task = function()
         .map(function(category)
         {
           log(category.title);
-          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>');
-
-          $categoryDIV[category.title]
+          $categoryDIV[category.title] = $('<div class="col-6 col-sm-6 col-lg-4"/>')
             .append('<h1>' + category.title + '</hi>')
             .append('<p>' + category.sub + '</p>')
-            .on('click', function()
-            {
-              g.io.pathpush('/area/' + area + '/category/' + category.title);
+            .addClass('link')
+            .attr('target', '/area/' + area + '/category/' + category.title)
+            .css('cursor', 'pointer');
 
-            });
 
           $row
             .append($categoryDIV[category.title]);
@@ -98,4 +96,4 @@ module.exports = {
     task();
   }
 
-};
+}

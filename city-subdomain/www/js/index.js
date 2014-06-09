@@ -1,6 +1,7 @@
 /* jshint node: true */
+/* jshint jquery: true */
 /* jshint sub: true */
-/* global window, $,alert,history */
+/* global window,document, $,alert,history */
 'use strict';
 
 var log = function(msg)
@@ -8,7 +9,6 @@ var log = function(msg)
   console.log('CORE:', msg);
 };
 log('init5');
-
 
 Object.defineProperty(Object.prototype, 'map',
 {
@@ -32,7 +32,7 @@ g.io = {};
 
 require('watchjs');
 
-$('document').ready(function()
+$(document).ready(function()
 {
   //===Key Handler==========================
   g.io.path = decodeURIComponent(window.location.pathname);
@@ -72,12 +72,12 @@ $('document').ready(function()
 
     });
 */
-  $('div.link')
-    .on('click', function()
-    {
-      g.io.pathpush(this.attr('target'));
 
-    });
+  $(document).on('click', '.link', function(e)
+  {
+    log($(this).attr('target'));
+    g.io.pathpush($(this).attr('target'));
+  });
 
   //===Modules==========================
   var modules = [];
