@@ -27,20 +27,6 @@ var task = function()
     log('----');
     log(o);
 
-    /*
-result[Object.keys(result).length] = {
-  postid: postid,
-  postdata: postdata,
-  tags: tags,
-  username: username,
-  threaddata: threaddata,
-  threadposts: threadposts
-};
-*/
-
-
-
-
     log(o.postid);
 
     log(o.postdata.html);
@@ -51,12 +37,6 @@ result[Object.keys(result).length] = {
 
     log(o.threaddata.title);
     log(o.threadposts);
-
-
-
-
-
-
 
 
     $(g.io.panel)

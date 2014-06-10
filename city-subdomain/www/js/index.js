@@ -86,6 +86,9 @@ $(document).ready(function()
   modules['areacontrol'] = require('../modules/areacontrol/client/client_module.js');
   modules['categorycontrol'] = require('../modules/categorycontrol/client/client_module.js');
   modules['list_thread'] = require('../modules/list_thread/client/client_module.js');
+  modules['login'] = require('../modules/login/client/client_module.js');
+
+
   //===Socket==========================
   var socketio = require('socket.io-client');
   g.io.socket = socketio.connect(window.location.hostname,
